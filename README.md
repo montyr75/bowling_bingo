@@ -1,1 +1,3 @@
-# bowling_bingo
+# Bowling Bingo
+
+A Bingo game for use while bowling.
