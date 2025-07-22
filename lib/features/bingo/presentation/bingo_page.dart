@@ -7,6 +7,7 @@ import '../../../utils/popup_utils.dart';
 import '../../../utils/screen_utils.dart';
 import '../../../widgets/game_page_wrapper.dart';
 import '../../../widgets/grid_layout.dart';
+import '../../../widgets/page_nav_button.dart';
 import '../../../widgets/score_sheet.dart';
 import '../../bowling_challenge/presentation/challenge_display.dart';
 import '../services/game_service.dart';
@@ -22,7 +23,6 @@ class BingoPage extends ConsumerWidget {
 
     return GamePageWrapper(
       bgImagePath: 'assets/images/boards.jpg',
-      showBowlingTip: true,
       children: [
         for (int i = 0; i < state.history.values.length; i++) ...[
           ScoreSheet(results: state.history.values.elementAt(i)),
@@ -39,9 +39,9 @@ class BingoPage extends ConsumerWidget {
         boxM,
         if (!state.hasChallenge) ...[
           boxM,
-          ElevatedButton(
+          PageNavButton(
+            label: !state.isTenthFrame ? 'Next Turn' : 'Next Game',
             onPressed: () => ref.read(gameServiceProvider.notifier).nextTurn(),
-            child: Text(!state.isTenthFrame ? 'Next Turn' : 'Next Game', style: const TextStyle(fontSize: 18)),
           ),
         ] else
           ChallengeDisplay(
@@ -53,7 +53,7 @@ class BingoPage extends ConsumerWidget {
             onFailure: (frame) {
               _onChallengeCompleted(context: context, ref: ref, frameData: frame, isSuccess: false);
             },
-          ).animate().scale(duration: 200.ms),
+          ).animate().fadeIn(duration: 300.ms),
       ],
     );
   }
@@ -107,21 +107,15 @@ class BingoSpace extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      child: DecoratedBox(
-        decoration: BoxDecoration(
-          color: Colors.black,
-          border: isSelected ? Border.all(color: Colors.yellow, width: 3) : null,
-          image: space.isMarked
-              ? const DecorationImage(
-                  image: AssetImage('assets/images/ball.png'),
-                  fit: BoxFit.cover,
-                )
-              : null,
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        image: DecorationImage(
+          image: isSelected ? const AssetImage('assets/images/green_square.png') : const AssetImage('assets/images/square.png'),
+          fit: BoxFit.fill,
         ),
-        child: const FittedBox(
-          child: Text(' '),
-        ),
+      ),
+      child: FittedBox(
+        child: space.isMarked ? Image.asset('assets/images/ball.png', fit: BoxFit.contain) : const Text(' '),
       ),
     );
   }

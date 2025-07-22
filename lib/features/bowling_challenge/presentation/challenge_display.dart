@@ -8,6 +8,7 @@ import '../../../models/frame.dart';
 import '../../../utils/popup_utils.dart';
 import '../../../utils/screen_utils.dart';
 import '../../../widgets/frame_editor.dart';
+import '../../../widgets/page_nav_button.dart';
 import '../controllers/challenge_ctrl.dart';
 
 class ChallengeDisplay extends ConsumerWidget {
@@ -242,7 +243,9 @@ class ChallengeDisplay extends ConsumerWidget {
                 ),
               if (showButtons && state.frame.isComplete) ...[
                 if (!state.isSuccess)
-                  ElevatedButton(
+                  PageNavButton(
+                    label: 'Failure',
+                    color: ButtonColor.red,
                     onPressed: () {
                       showConfirmDialog(
                         context: context,
@@ -253,10 +256,11 @@ class ChallengeDisplay extends ConsumerWidget {
                         onConfirm: () => onFailure(state.frame),
                       );
                     },
-                    child: const Text('Failure'),
                   ).animate().slideX()
                 else
-                  ElevatedButton(
+                  PageNavButton(
+                    label: 'Success',
+                    color: ButtonColor.green,
                     onPressed: () {
                       showConfirmDialog(
                         autoDismiss: true,
@@ -268,7 +272,6 @@ class ChallengeDisplay extends ConsumerWidget {
                         onConfirm: () => onSuccess(state.frame),
                       );
                     },
-                    child: const Text('Success'),
                   ).animate().slideX(),
               ],
             ],

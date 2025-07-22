@@ -7,6 +7,8 @@ import '../../../data/bowler_levels.dart';
 import '../../../routes.dart';
 import '../../../utils/screen_utils.dart';
 import '../../../widgets/bg_bubble.dart';
+import '../../../widgets/bowling_tip.dart';
+import '../../../widgets/page_nav_button.dart';
 import '../services/app/app_service.dart';
 
 class HomePage extends ConsumerWidget {
@@ -42,11 +44,16 @@ class HomePage extends ConsumerWidget {
               ),
             ),
             boxXXL,
-            ElevatedButton(
+            PageNavButton(
+              label: 'Play',
               onPressed: () => context.goNamed(AppRoute.game.name),
-              child: const Text('Play', style: TextStyle(fontSize: 18)),
             ),
             const Spacer(),
+            ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 350.0),
+              child: const BowlingTip(),
+            ),
+            boxXXL,
             const BgBubble(
               child: Text("v$version"),
             ),

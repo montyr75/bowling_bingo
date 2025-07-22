@@ -12,9 +12,12 @@ class ThemeService extends _$ThemeService {
 
   @override
   ThemeState build() {
+    final light = FlexThemeData.light(scheme: colorScheme);
+    final dark = FlexThemeData.dark(scheme: colorScheme);
+
     return ThemeState(
-      light: FlexThemeData.light(scheme: colorScheme),
-      dark: FlexThemeData.dark(scheme: colorScheme),
+      light: light,
+      dark: dark.copyWith(textTheme: _buildTextTheme(dark.textTheme)),
     );
   }
 
@@ -55,52 +58,52 @@ class ThemeService extends _$ThemeService {
     return base.copyWith(
       displayLarge: base.displayLarge!.copyWith(
         fontSize: 28,
-        fontFamily: 'Grange',
+        fontFamily: 'Sniglet',
       ),
       displayMedium: base.displayMedium!.copyWith(
         fontSize: 18,
-        fontFamily: 'MedievalSharp',
+        fontFamily: 'Sniglet',
       ),
       displaySmall: base.displaySmall!.copyWith(
         fontSize: 14,
-        fontFamily: 'MedievalSharp',
+        fontFamily: 'Sniglet',
       ),
       headlineLarge: base.headlineLarge!.copyWith(
         fontSize: 28,
-        fontFamily: 'MedievalSharp',
+        fontFamily: 'Sniglet',
       ),
       headlineMedium: base.headlineMedium!.copyWith(
         fontSize: 18,
-        fontFamily: 'Dystopia',
+        fontFamily: 'Sniglet',
       ),
       headlineSmall: base.headlineSmall!.copyWith(
         fontSize: 16,
-        fontFamily: 'Dystopia',
+        fontFamily: 'Sniglet',
       ),
       titleLarge: base.titleLarge!.copyWith(
         fontSize: 18,
-        fontFamily: 'HeavyMetal2',
+        fontFamily: 'Sniglet',
       ),
       // TextField default
       titleMedium: base.titleMedium!.copyWith(
         fontSize: 16,
-        fontFamily: 'HeavyMetal2',
+        fontFamily: 'Sniglet',
       ),
       titleSmall: base.titleSmall!.copyWith(
         fontSize: 14,
-        fontFamily: 'HeavyMetal2',
+        fontFamily: 'Sniglet',
       ),
       bodyLarge: base.bodyLarge!.copyWith(
         fontSize: 18,
-        fontFamily: 'FiraCodeMed',
+        fontFamily: 'Sniglet',
       ),
       bodyMedium: base.bodyMedium!.copyWith(
         fontSize: 12,
-        fontFamily: 'FiraCodeMed',
+        fontFamily: 'Sniglet',
       ),
       bodySmall: base.bodySmall!.copyWith(
         fontSize: 10,
-        fontFamily: 'FiraCodeMed',
+        fontFamily: 'Sniglet',
       ),
     );
   }

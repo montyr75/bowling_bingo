@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import '../features/bingo/services/game_service.dart';
 import '../utils/popup_utils.dart';
 import '../utils/screen_utils.dart';
+import 'page_nav_button.dart';
 import 'score_sheet.dart';
 import 'success_rate_bubble.dart';
 
@@ -40,20 +41,22 @@ class StatsPage extends ConsumerWidget {
                           ScoreSheet(results: history),
                         ],
                         boxXXL,
-                        ElevatedButton(
+                        PageNavButton(
+                          label: 'Clear Bingo Card',
+                          width: 200,
                           onPressed: () {
                             showConfirmDialog(
                               context: context,
                               title: "Are you sure?",
                               message:
                                   "You are about to clear your Bingo card and start a new one. This cannot be undone.",
-                              onConfirm: () => context.pop(),
+                              onConfirm: () => ref.read(gameServiceProvider.notifier).clearBingoCard(),
                             );
                           },
-                          child: const Text('Clear Bingo Card', style: TextStyle(fontSize: 18)),
                         ),
                         boxXXL,
-                        ElevatedButton(
+                        PageNavButton(
+                          label: 'Quit',
                           onPressed: () {
                             showConfirmDialog(
                               context: context,
@@ -62,7 +65,6 @@ class StatsPage extends ConsumerWidget {
                               onConfirm: () => context.pop(),
                             );
                           },
-                          child: const Text('Quit', style: TextStyle(fontSize: 18)),
                         ),
                       ],
                     ),

@@ -99,6 +99,10 @@ class GameService extends _$GameService {
   //   return AppRoute.room;
   // }
 
+  void clearBingoCard() {
+    state = state.initialize5By5();
+  }
+
   GameState _nextFrame(GameState state) {
     final isNewGame = state.frame == 10;
 
