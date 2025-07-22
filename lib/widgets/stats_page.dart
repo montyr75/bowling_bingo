@@ -45,12 +45,22 @@ class StatsPage extends ConsumerWidget {
                             showConfirmDialog(
                               context: context,
                               title: "Are you sure?",
-                              message: "You are about to quit your current game. This cannot be undone.",
-                              yesMsg: "Confirm",
-                              noMsg: "Cancel",
+                              message:
+                                  "You are about to clear your Bingo card and start a new one. This cannot be undone.",
                               onConfirm: () => context.pop(),
                             );
-
+                          },
+                          child: const Text('Clear Bingo Card', style: TextStyle(fontSize: 18)),
+                        ),
+                        boxXXL,
+                        ElevatedButton(
+                          onPressed: () {
+                            showConfirmDialog(
+                              context: context,
+                              title: "Are you sure?",
+                              message: "You are about to quit your current game. This cannot be undone.",
+                              onConfirm: () => context.pop(),
+                            );
                           },
                           child: const Text('Quit', style: TextStyle(fontSize: 18)),
                         ),

@@ -41,7 +41,7 @@ class BingoPage extends ConsumerWidget {
           boxM,
           ElevatedButton(
             onPressed: () => ref.read(gameServiceProvider.notifier).nextTurn(),
-            child: const Text('Next Turn', style: TextStyle(fontSize: 18)),
+            child: Text(!state.isTenthFrame ? 'Next Turn' : 'Next Game', style: const TextStyle(fontSize: 18)),
           ),
         ] else
           ChallengeDisplay(

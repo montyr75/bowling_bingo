@@ -17,7 +17,7 @@ class GameService extends _$GameService {
   GameState build() {
     // final appState = ref.read(appServiceProvider);
 
-    return GameState.initialize5By5();
+    return const GameState().initialize5By5();
   }
 
   void restore(GameState value) {

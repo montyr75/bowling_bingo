@@ -24,11 +24,10 @@ class GameState with GameStateMappable {
     this.history = const {},
   });
 
-  factory GameState.initialize5By5({int game = 1}) {
+  GameState initialize5By5() {
     final card = List.generate(25, (index) => Space(index: index)).markSpace(12);
 
-    return GameState(
-      game: game,
+    return copyWith(
       card: card,
       points: card.calculateScore(),
     );
@@ -45,6 +44,7 @@ class GameState with GameStateMappable {
   }
 
   bool get hasChallenge => challenge != null;
+  bool get isTenthFrame => frame == 10;
 }
 
 @MappableClass()
