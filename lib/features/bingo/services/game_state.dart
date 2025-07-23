@@ -44,7 +44,7 @@ class GameState with GameStateMappable {
   }
 
   bool get hasChallenge => challenge != null;
-  bool get isTenthFrame => frame == 10;
+  bool get isNewGame => frame == 1 && game > 1;
 }
 
 @MappableClass()

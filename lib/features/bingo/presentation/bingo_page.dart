@@ -40,7 +40,7 @@ class BingoPage extends ConsumerWidget {
         if (!state.hasChallenge) ...[
           boxM,
           PageNavButton(
-            label: !state.isTenthFrame ? 'Next Turn' : 'Next Game',
+            label: !state.isNewGame ? 'Next Turn' : 'Next Game',
             onPressed: () => ref.read(gameServiceProvider.notifier).nextTurn(),
           ),
         ] else
@@ -110,12 +110,16 @@ class BingoSpace extends StatelessWidget {
     return DecoratedBox(
       decoration: BoxDecoration(
         image: DecorationImage(
-          image: isSelected ? const AssetImage('assets/images/green_square.png') : const AssetImage('assets/images/square.png'),
+          image: isSelected
+              ? const AssetImage('assets/images/green_square.png')
+              : const AssetImage('assets/images/square.png'),
           fit: BoxFit.fill,
         ),
       ),
       child: FittedBox(
-        child: space.isMarked ? Image.asset('assets/images/ball.png', fit: BoxFit.contain) : const Text(' '),
+        child: space.isMarked
+            ? Image.asset('assets/images/ball.png', fit: BoxFit.contain).animate().scale()
+            : const Text(' '),
       ),
     );
   }
