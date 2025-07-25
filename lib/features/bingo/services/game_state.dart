@@ -8,9 +8,9 @@ part 'game_state.mapper.dart';
 
 @MappableClass()
 class GameState with GameStateMappable {
-  final int game;   // the current bowling game
+  final int game; // the current bowling game
   final int frame;
-  final Challenge? challenge;  // index of space in contention
+  final Challenge? challenge; // index of space in contention
   final int points;
   final List<Space> card;
   final Map<int, List<ChallengeResultBase>> history;
@@ -28,7 +28,7 @@ class GameState with GameStateMappable {
     final card = List.generate(25, (index) => Space(index: index)).markSpace(12);
 
     return copyWith(
-      card: card,
+      card: List.unmodifiable(card.setRandomBonusSpace()),
       points: card.calculateScore(),
     );
   }
@@ -44,18 +44,32 @@ class GameState with GameStateMappable {
   }
 
   bool get hasChallenge => challenge != null;
+
   bool get isNewGame => frame == 1 && game > 1;
 }
 
 @MappableClass()
 class Space with SpaceMappable {
   final int index;
-  final bool isMarked;
+  final SpaceState state;
 
   const Space({
     required this.index,
-    this.isMarked = false,
+    this.state = SpaceState.unmarked,
   });
+
+  bool get isMarked => state == SpaceState.marked;
+
+  bool get isUnmarked => state == SpaceState.unmarked;
+
+  bool get isBonus => state == SpaceState.bonus;
+}
+
+@MappableEnum()
+enum SpaceState {
+  unmarked,
+  marked,
+  bonus,
 }
 
 @MappableClass()
@@ -90,12 +104,25 @@ const List<List<int>> bingoWinConditions5x5 = [
 ];
 
 extension ListSpaceX on List<Space> {
-  List<Space> markSpace(int index) {
-    final space = this[index].copyWith(isMarked: true);
+  List<Space> setSpaceState(int index, SpaceState state) {
+    final space = this[index].copyWith(state: state);
     return List.unmodifiable(toList()..replaceAt(index, space));
   }
 
-  bool hasBingo(List<List<int>> winConditions) {
+  List<Space> markSpace(int index) => setSpaceState(index, SpaceState.marked);
+
+  List<Space> markRandomSpace() => setSpaceState(getRandomUnmarkedSpace().index, SpaceState.marked);
+
+  List<Space> getUnmarkedSpaces() => where((space) => !space.isMarked).toList();
+
+  Space getRandomUnmarkedSpace() {
+    final unmarkedSpaces = getUnmarkedSpaces()..shuffle();
+    return unmarkedSpaces.first;
+  }
+
+  List<Space> setRandomBonusSpace() => setSpaceState(getRandomUnmarkedSpace().index, SpaceState.bonus);
+
+  bool isBingo(List<List<int>> winConditions) {
     final markedList = map((space) => space.isMarked).toList();
 
     for (final line in winConditions) {
@@ -131,10 +158,7 @@ extension ListSpaceX on List<Space> {
         final neighborRow = row + rOffset;
         final neighborCol = col + cOffset;
 
-        if (neighborRow >= 0 &&
-            neighborRow < extent &&
-            neighborCol >= 0 &&
-            neighborCol < extent) {
+        if (neighborRow >= 0 && neighborRow < extent && neighborCol >= 0 && neighborCol < extent) {
           final neighborIndex = neighborRow * extent + neighborCol;
 
           if (this[neighborIndex].isMarked) {

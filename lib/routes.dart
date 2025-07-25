@@ -6,11 +6,13 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'features/app/presentation/home_page.dart';
 import 'features/app/presentation/not_found_page.dart';
 import 'features/bingo/presentation/bingo_page.dart';
+import 'features/marker_selection/presentation/marker_selection_page.dart';
 
 part 'routes.g.dart';
 
 enum AppRoute {
   home('/'),
+  markerSelection('/marker-selection'),
   game('/game');
 
   final String? _path;
@@ -45,55 +47,15 @@ GoRouter goRouter(Ref ref) {
         builder: (context, state) => const HomePage(),
         routes: [
           GoRoute(
+            name: AppRoute.markerSelection.name,
+            path: AppRoute.markerSelection.path,
+            builder: (context, state) => const MarkerSelectionPage(),
+          ),
+          GoRoute(
             name: AppRoute.game.name,
             path: AppRoute.game.path,
             builder: (context, state) => const BingoPage(),
-            // routes: [
-            //   GoRoute(
-            //     name: AppRoute.characterDetails.name,
-            //     path: AppRoute.characterDetails.path,
-            //     builder: (context, state) =>
-            //         CharacterDetailsPage(character: state.extra as Character),
-            //   ),
-            // ],
           ),
-          // GoRoute(
-          //   name: AppRoute.corridor.name,
-          //   path: AppRoute.corridor.path,
-          //   builder: (context, state) => const CorridorPage(),
-          //   routes: [
-          //     GoRoute(
-          //       name: AppRoute.room.name,
-          //       path: AppRoute.room.path,
-          //       builder: (context, state) => const RoomPage(),
-          //     ),
-          //     GoRoute(
-          //       name: AppRoute.lair.name,
-          //       path: AppRoute.lair.path,
-          //       builder: (context, state) => const LairPage(),
-          //     ),
-          //     GoRoute(
-          //       name: AppRoute.bossLair.name,
-          //       path: AppRoute.bossLair.path,
-          //       builder: (context, state) => const BossLairPage(),
-          //     ),
-          //      GoRoute(
-          //       name: AppRoute.tavern.name,
-          //       path: AppRoute.tavern.path,
-          //       builder: (context, state) => const TavernPage(),
-          //     ),
-          //     GoRoute(
-          //       name: AppRoute.fork.name,
-          //       path: AppRoute.fork.path,
-          //       builder: (context, state) => const ForkPage(),
-          //     ),
-          //    GoRoute(
-          //       name: AppRoute.treasureRoom.name,
-          //       path: AppRoute.treasureRoom.path,
-          //       builder: (context, state) => const TreasureRoomPage(),
-          //     ),
-          //   ],
-          // ),
         ],
       ),
     ],

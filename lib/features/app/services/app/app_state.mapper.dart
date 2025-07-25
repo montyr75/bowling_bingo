@@ -24,14 +24,20 @@ class AppStateMapper extends ClassMapperBase<AppState> {
   static BowlerLevel _$bowlerLevel(AppState v) => v.bowlerLevel;
   static const Field<AppState, BowlerLevel> _f$bowlerLevel =
       Field('bowlerLevel', _$bowlerLevel, opt: true, def: BowlerLevel.beginner);
+  static BingoMarker _$bingoMarker(AppState v) => v.bingoMarker;
+  static const Field<AppState, BingoMarker> _f$bingoMarker =
+      Field('bingoMarker', _$bingoMarker, opt: true, def: BingoMarker.blueBall);
 
   @override
   final MappableFields<AppState> fields = const {
     #bowlerLevel: _f$bowlerLevel,
+    #bingoMarker: _f$bingoMarker,
   };
 
   static AppState _instantiate(DecodingData data) {
-    return AppState(bowlerLevel: data.dec(_f$bowlerLevel));
+    return AppState(
+        bowlerLevel: data.dec(_f$bowlerLevel),
+        bingoMarker: data.dec(_f$bingoMarker));
   }
 
   @override
@@ -84,7 +90,7 @@ extension AppStateValueCopy<$R, $Out> on ObjectCopyWith<$R, AppState, $Out> {
 
 abstract class AppStateCopyWith<$R, $In extends AppState, $Out>
     implements ClassCopyWith<$R, $In, $Out> {
-  $R call({BowlerLevel? bowlerLevel});
+  $R call({BowlerLevel? bowlerLevel, BingoMarker? bingoMarker});
   AppStateCopyWith<$R2, $In, $Out2> $chain<$R2, $Out2>(Then<$Out2, $R2> t);
 }
 
@@ -97,11 +103,15 @@ class _AppStateCopyWithImpl<$R, $Out>
   late final ClassMapperBase<AppState> $mapper =
       AppStateMapper.ensureInitialized();
   @override
-  $R call({BowlerLevel? bowlerLevel}) => $apply(
-      FieldCopyWithData({if (bowlerLevel != null) #bowlerLevel: bowlerLevel}));
+  $R call({BowlerLevel? bowlerLevel, BingoMarker? bingoMarker}) =>
+      $apply(FieldCopyWithData({
+        if (bowlerLevel != null) #bowlerLevel: bowlerLevel,
+        if (bingoMarker != null) #bingoMarker: bingoMarker
+      }));
   @override
-  AppState $make(CopyWithData data) =>
-      AppState(bowlerLevel: data.get(#bowlerLevel, or: $value.bowlerLevel));
+  AppState $make(CopyWithData data) => AppState(
+      bowlerLevel: data.get(#bowlerLevel, or: $value.bowlerLevel),
+      bingoMarker: data.get(#bingoMarker, or: $value.bingoMarker));
 
   @override
   AppStateCopyWith<$R2, AppState, $Out2> $chain<$R2, $Out2>(

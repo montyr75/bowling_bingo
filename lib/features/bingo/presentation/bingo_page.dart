@@ -9,51 +9,73 @@ import '../../../widgets/game_page_wrapper.dart';
 import '../../../widgets/grid_layout.dart';
 import '../../../widgets/page_nav_button.dart';
 import '../../../widgets/score_sheet.dart';
+import '../../app/services/app/app_service.dart';
 import '../../bowling_challenge/presentation/challenge_display.dart';
 import '../services/game_service.dart';
 import '../services/game_state.dart';
 
-class BingoPage extends ConsumerWidget {
+class BingoPage extends StatelessWidget {
   const BingoPage({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final state = ref.watch(gameServiceProvider);
+  Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
 
     return GamePageWrapper(
       bgImagePath: 'assets/images/boards.jpg',
       children: [
-        for (int i = 0; i < state.history.values.length; i++) ...[
-          ScoreSheet(results: state.history.values.elementAt(i)),
-          boxL,
-        ],
-        SizedBox(
-          width: size.width * 0.9,
-          height: size.height * 0.4,
-          child: BingoCard(
-            card: state.card,
-            currentSpace: state.challenge?.space,
-          ),
+        Consumer(
+          builder: (context, ref, child) {
+            final history = ref.watch(gameServiceProvider.select((state) => state.history));
+
+            return Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                for (int i = 0; i < history.values.length; i++) ...[
+                  ScoreSheet(results: history.values.elementAt(i)).animate().slideY(),
+                  boxL,
+                ],
+              ],
+            );
+          },
         ),
-        boxM,
-        if (!state.hasChallenge) ...[
-          boxM,
-          PageNavButton(
-            label: !state.isNewGame ? 'Next Turn' : 'Next Game',
-            onPressed: () => ref.read(gameServiceProvider.notifier).nextTurn(),
-          ),
-        ] else
-          ChallengeDisplay(
-            challenge: state.challenge!.challenge,
-            strength: state.challenge!.strength,
-            onSuccess: (frame) {
-              _onChallengeCompleted(context: context, ref: ref, frameData: frame, isSuccess: true);
-            },
-            onFailure: (frame) {
-              _onChallengeCompleted(context: context, ref: ref, frameData: frame, isSuccess: false);
-            },
-          ).animate().fadeIn(duration: 300.ms),
+        Consumer(
+          builder: (context, ref, child) {
+            final state = ref.watch(gameServiceProvider);
+
+            return Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                SizedBox(
+                  width: size.width * 0.9,
+                  height: size.height * 0.4,
+                  child: BingoCard(
+                    card: state.card,
+                    currentSpace: state.challenge?.space,
+                  ),
+                ),
+                boxM,
+                if (!state.hasChallenge) ...[
+                  boxM,
+                  PageNavButton(
+                    label: !state.isNewGame ? 'Next Turn' : 'Next Game',
+                    onPressed: () => ref.read(gameServiceProvider.notifier).nextTurn(),
+                  ),
+                ] else
+                  ChallengeDisplay(
+                    challenge: state.challenge!.challenge,
+                    strength: state.challenge!.strength,
+                    onSuccess: (frame) {
+                      _onChallengeCompleted(context: context, ref: ref, frameData: frame, isSuccess: true);
+                    },
+                    onFailure: (frame) {
+                      _onChallengeCompleted(context: context, ref: ref, frameData: frame, isSuccess: false);
+                    },
+                  ).animate().fadeIn(duration: 300.ms),
+              ],
+            );
+          },
+        ),
       ],
     );
   }
@@ -64,12 +86,20 @@ class BingoPage extends ConsumerWidget {
     required Frame frameData,
     required bool isSuccess,
   }) async {
-    final isBingo = ref
+    final result = ref
         .read(gameServiceProvider.notifier)
         .onChallengeComplete(frameData: frameData, isSuccess: isSuccess);
 
-    if (isBingo) {
+    if (result.isBingo) {
       await showInfoDialog(context: context, title: "BINGO!", message: "You win!");
+    } else if (result.isBonus) {
+      await showInfoDialog(context: context, title: "BONUS!", message: "Enjoy your free bonus space!");
+
+      final isBingo = ref.read(gameServiceProvider.notifier).markRandomSpace();
+
+      if (isBingo && context.mounted) {
+        await showInfoDialog(context: context, title: "BINGO!", message: "You win!");
+      }
     }
   }
 }
@@ -93,7 +123,7 @@ class BingoCard extends StatelessWidget {
   }
 }
 
-class BingoSpace extends StatelessWidget {
+class BingoSpace extends ConsumerWidget {
   final Space space;
   final bool isSelected;
   final Widget? child;
@@ -106,7 +136,20 @@ class BingoSpace extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final marker = ref.read(appServiceProvider).bingoMarker;
+
+    Widget content = child ?? const Text(' ');
+
+    if (space.isMarked) {
+      content = Image.asset(marker.assetPath, fit: BoxFit.contain).animate().scale();
+    } else if (space.isBonus) {
+      content = ColorFiltered(
+        colorFilter: const ColorFilter.mode(Colors.yellowAccent, BlendMode.srcATop),
+        child: Image.asset('assets/images/question_mark.png', fit: BoxFit.contain).animate().scale(),
+      );
+    }
+
     return DecoratedBox(
       decoration: BoxDecoration(
         image: DecorationImage(
@@ -117,9 +160,10 @@ class BingoSpace extends StatelessWidget {
         ),
       ),
       child: FittedBox(
-        child: space.isMarked
-            ? Image.asset('assets/images/ball.png', fit: BoxFit.contain).animate().scale()
-            : const Text(' '),
+        child: Padding(
+          padding: const EdgeInsets.all(32.0),
+          child: content,
+        ),
       ),
     );
   }

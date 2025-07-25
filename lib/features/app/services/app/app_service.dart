@@ -22,6 +22,12 @@ class AppService extends _$AppService {
     );
   }
 
+  void selectBingoMarker(BingoMarker value) {
+    state = state.copyWith(
+      bingoMarker: value,
+    );
+  }
+
   String getBowlingTip() => bowlingTips[rand(bowlingTips.length)];
 
   // String serializeGameData() {

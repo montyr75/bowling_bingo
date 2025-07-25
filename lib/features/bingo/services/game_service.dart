@@ -61,7 +61,7 @@ class GameService extends _$GameService {
     );
   }
 
-  bool onChallengeComplete({required Frame frameData, required bool isSuccess}) {
+  ({bool isBingo, bool isBonus}) onChallengeComplete({required Frame frameData, required bool isSuccess}) {
     GameState newState = _updateHistory(
       state,
       ChallengeResult(
@@ -74,8 +74,10 @@ class GameService extends _$GameService {
       ),
     );
 
+    final space = state.card[state.challenge!.space];
+
     if (isSuccess) {
-      final card = state.card.markSpace(state.challenge!.space);
+      final card = state.card.markSpace(space.index);
 
       newState = newState.copyWith(
         card: card,
@@ -85,19 +87,19 @@ class GameService extends _$GameService {
 
     state = _nextFrame(newState).clearChallenge();
 
-    return state.card.hasBingo(bingoWinConditions5x5);
+    return (isBingo: state.card.isBingo(bingoWinConditions5x5), isBonus: space.isBonus);
   }
 
-  // AppRoute nextChallenge() {
-  //   final report = generateReport();
-  //   final chanceOfSpecial = report.percentFailure.maxOf(50);
-  //
-  //   if (rollPercent(chanceOfSpecial)) {
-  //     return AppRoute.fork;
-  //   }
-  //
-  //   return AppRoute.room;
-  // }
+  bool markRandomSpace() {
+    final card = state.card.markRandomSpace();
+
+    state = state.copyWith(
+      card: card,
+      points: card.calculateScore(extent: 5),
+    );
+
+    return state.card.isBingo(bingoWinConditions5x5);
+  }
 
   void clearBingoCard() {
     state = state.initialize5By5();
@@ -118,12 +120,6 @@ class GameService extends _$GameService {
 
     return state.copyWith(
       history: Map<int, List<ChallengeResultBase>>.unmodifiable(history),
-    );
-  }
-
-  GameReport generateReport() {
-    return GameReport(
-      history: state.history,
     );
   }
 
@@ -188,15 +184,11 @@ class GameService extends _$GameService {
   // }
 }
 
-class GameReport {
-  final Map<int, List<ChallengeResultBase>> history;
-
-  const GameReport({required this.history});
-
+extension BowlingGamesX on Map<int, List<ChallengeResultBase>> {
   int get totalWon {
     int total = 0;
 
-    for (final game in history.values) {
+    for (final game in values) {
       total += game.count((value) => value.isSuccess);
     }
 
@@ -206,7 +198,7 @@ class GameReport {
   int get totalChallenges {
     int total = 0;
 
-    for (final game in history.values) {
+    for (final game in values) {
       total += game.length;
     }
 

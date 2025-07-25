@@ -1,3 +1,4 @@
+import 'package:backdrop/backdrop.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -50,7 +51,10 @@ class StatsPage extends ConsumerWidget {
                               title: "Are you sure?",
                               message:
                                   "You are about to clear your Bingo card and start a new one. This cannot be undone.",
-                              onConfirm: () => ref.read(gameServiceProvider.notifier).clearBingoCard(),
+                              onConfirm: () {
+                                ref.read(gameServiceProvider.notifier).clearBingoCard();
+                                Backdrop.of(context).concealBackLayer();
+                              },
                             );
                           },
                         ),

@@ -13,7 +13,7 @@ class SuccessRateBubble extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final appState = ref.read(appServiceProvider);
-    final report = ref.read(gameServiceProvider.notifier).generateReport();
+    final gameState = ref.read(gameServiceProvider);
 
     final styles = context.textStyles;
 
@@ -30,7 +30,7 @@ class SuccessRateBubble extends ConsumerWidget {
               ),
               boxM,
               Text(
-                "${report.percentSuccess}%",
+                "${gameState.history.percentSuccess}%",
                 style: styles.headlineSmall,
               ),
             ],

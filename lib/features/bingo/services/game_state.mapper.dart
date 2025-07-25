@@ -6,6 +6,56 @@
 
 part of 'game_state.dart';
 
+class SpaceStateMapper extends EnumMapper<SpaceState> {
+  SpaceStateMapper._();
+
+  static SpaceStateMapper? _instance;
+  static SpaceStateMapper ensureInitialized() {
+    if (_instance == null) {
+      MapperContainer.globals.use(_instance = SpaceStateMapper._());
+    }
+    return _instance!;
+  }
+
+  static SpaceState fromValue(dynamic value) {
+    ensureInitialized();
+    return MapperContainer.globals.fromValue(value);
+  }
+
+  @override
+  SpaceState decode(dynamic value) {
+    switch (value) {
+      case r'unmarked':
+        return SpaceState.unmarked;
+      case r'marked':
+        return SpaceState.marked;
+      case r'bonus':
+        return SpaceState.bonus;
+      default:
+        throw MapperException.unknownEnumValue(value);
+    }
+  }
+
+  @override
+  dynamic encode(SpaceState self) {
+    switch (self) {
+      case SpaceState.unmarked:
+        return r'unmarked';
+      case SpaceState.marked:
+        return r'marked';
+      case SpaceState.bonus:
+        return r'bonus';
+    }
+  }
+}
+
+extension SpaceStateMapperExtension on SpaceState {
+  String toValue() {
+    SpaceStateMapper.ensureInitialized();
+    return MapperContainer.globals.toValue<SpaceState>(this) as String;
+  }
+}
+
 class GameStateMapper extends ClassMapperBase<GameState> {
   GameStateMapper._();
 
@@ -322,6 +372,7 @@ class SpaceMapper extends ClassMapperBase<Space> {
   static SpaceMapper ensureInitialized() {
     if (_instance == null) {
       MapperContainer.globals.use(_instance = SpaceMapper._());
+      SpaceStateMapper.ensureInitialized();
     }
     return _instance!;
   }
@@ -331,18 +382,18 @@ class SpaceMapper extends ClassMapperBase<Space> {
 
   static int _$index(Space v) => v.index;
   static const Field<Space, int> _f$index = Field('index', _$index);
-  static bool _$isMarked(Space v) => v.isMarked;
-  static const Field<Space, bool> _f$isMarked =
-      Field('isMarked', _$isMarked, opt: true, def: false);
+  static SpaceState _$state(Space v) => v.state;
+  static const Field<Space, SpaceState> _f$state =
+      Field('state', _$state, opt: true, def: SpaceState.unmarked);
 
   @override
   final MappableFields<Space> fields = const {
     #index: _f$index,
-    #isMarked: _f$isMarked,
+    #state: _f$state,
   };
 
   static Space _instantiate(DecodingData data) {
-    return Space(index: data.dec(_f$index), isMarked: data.dec(_f$isMarked));
+    return Space(index: data.dec(_f$index), state: data.dec(_f$state));
   }
 
   @override
@@ -391,7 +442,7 @@ extension SpaceValueCopy<$R, $Out> on ObjectCopyWith<$R, Space, $Out> {
 
 abstract class SpaceCopyWith<$R, $In extends Space, $Out>
     implements ClassCopyWith<$R, $In, $Out> {
-  $R call({int? index, bool? isMarked});
+  $R call({int? index, SpaceState? state});
   SpaceCopyWith<$R2, $In, $Out2> $chain<$R2, $Out2>(Then<$Out2, $R2> t);
 }
 
@@ -402,14 +453,12 @@ class _SpaceCopyWithImpl<$R, $Out> extends ClassCopyWithBase<$R, Space, $Out>
   @override
   late final ClassMapperBase<Space> $mapper = SpaceMapper.ensureInitialized();
   @override
-  $R call({int? index, bool? isMarked}) => $apply(FieldCopyWithData({
-        if (index != null) #index: index,
-        if (isMarked != null) #isMarked: isMarked
-      }));
+  $R call({int? index, SpaceState? state}) => $apply(FieldCopyWithData(
+      {if (index != null) #index: index, if (state != null) #state: state}));
   @override
   Space $make(CopyWithData data) => Space(
       index: data.get(#index, or: $value.index),
-      isMarked: data.get(#isMarked, or: $value.isMarked));
+      state: data.get(#state, or: $value.state));
 
   @override
   SpaceCopyWith<$R2, Space, $Out2> $chain<$R2, $Out2>(Then<$Out2, $R2> t) =>

@@ -19,7 +19,6 @@ AppBar buildGameBar() {
         builder: (context, ref, child) {
           final appState = ref.read(appServiceProvider);
           final gameState = ref.watch(gameServiceProvider);
-          final report = ref.read(gameServiceProvider.notifier).generateReport();
 
           final styles = context.textStyles;
 
@@ -59,7 +58,7 @@ AppBar buildGameBar() {
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         Text(
-                          "Success Rate: ${report.percentSuccess}%",
+                          "Success Rate: ${gameState.history.percentSuccess}%",
                           style: styles.labelMedium,
                         ),
                       ],
@@ -69,7 +68,7 @@ AppBar buildGameBar() {
               ),
               CenterRight(
                 child: Padding(
-                  padding: paddingAllM,
+                  padding: const EdgeInsets.only(right: xl),
                   child: Text(
                     gameState.points.toString(),
                     style: styles.displaySmall.copyWith(fontSize: 24),

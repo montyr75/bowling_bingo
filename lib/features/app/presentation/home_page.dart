@@ -46,7 +46,7 @@ class HomePage extends ConsumerWidget {
             boxXXL,
             PageNavButton(
               label: 'Play',
-              onPressed: () => context.goNamed(AppRoute.game.name),
+              onPressed: () => context.goNamed(AppRoute.markerSelection.name),
             ),
             const Spacer(),
             ConstrainedBox(
