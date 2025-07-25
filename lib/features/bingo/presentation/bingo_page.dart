@@ -1,6 +1,9 @@
+import 'package:awesome_flutter_extensions/awesome_flutter_extensions.dart' hide Space;
+import 'package:extra_alignments/extra_alignments.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
 
 import '../../../models/frame.dart';
 import '../../../utils/popup_utils.dart';
@@ -91,16 +94,45 @@ class BingoPage extends StatelessWidget {
         .onChallengeComplete(frameData: frameData, isSuccess: isSuccess);
 
     if (result.isBingo) {
-      await showInfoDialog(context: context, title: "BINGO!", message: "You win!");
+      await _showBingo();
     } else if (result.isBonus) {
       await showInfoDialog(context: context, title: "BONUS!", message: "Enjoy your free bonus space!");
 
       final isBingo = ref.read(gameServiceProvider.notifier).markRandomSpace();
 
       if (isBingo && context.mounted) {
-        await showInfoDialog(context: context, title: "BINGO!", message: "You win!");
+        await _showBingo();
       }
     }
+  }
+
+  Future<void> _showBingo() {
+    return SmartDialog.show(
+      builder: (context) {
+        return GestureDetector(
+          onTap: SmartDialog.dismiss,
+          child: SizedBox(
+            width: 400,
+            height: 267,
+            child: Stack(
+              children: [
+                Image.asset('assets/images/bingo.png', width: 400),
+                Positioned(
+                  left: 0,
+                  right: 0,
+                  bottom: 75,
+                  child: Text(
+                    '(tap to dismiss)',
+                    style: context.textStyles.titleMedium.copyWith(color: Colors.black),
+                    textAlign: TextAlign.center,
+                  ).animate().scale(delay: const Duration(seconds: 2)),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
   }
 }
 

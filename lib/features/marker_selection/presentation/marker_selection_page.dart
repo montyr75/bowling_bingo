@@ -28,22 +28,25 @@ class MarkerSelectionPage extends ConsumerWidget {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Expanded(
-                child: GridView.count(
-                  crossAxisCount: 2,
-                  mainAxisSpacing: lg,
-                  crossAxisSpacing: lg,
-                  children: BingoMarker.values
-                      .map(
-                        (marker) => MarkerOption(
-                          marker: marker,
-                          onSelected: (marker) {
-                            ref.read(appServiceProvider.notifier).selectBingoMarker(marker);
-                            context.goNamed(AppRoute.game.name);
-                          },
-                        ),
-                      )
-                      .toList(),
+              Flexible(
+                child: ConstrainedBox(
+                  constraints: const BoxConstraints(maxWidth: 600),
+                  child: GridView.count(
+                    crossAxisCount: 2,
+                    mainAxisSpacing: lg,
+                    crossAxisSpacing: lg,
+                    children: BingoMarker.values
+                        .map(
+                          (marker) => MarkerOption(
+                            marker: marker,
+                            onSelected: (marker) {
+                              ref.read(appServiceProvider.notifier).selectBingoMarker(marker);
+                              context.goNamed(AppRoute.game.name);
+                            },
+                          ),
+                        )
+                        .toList(),
+                  ),
                 ),
               ),
             ],
