@@ -44,7 +44,6 @@ class GameState with GameStateMappable {
   }
 
   bool get hasChallenge => challenge != null;
-
   bool get isNewGame => frame == 1 && game > 1;
 }
 
@@ -52,17 +51,18 @@ class GameState with GameStateMappable {
 class Space with SpaceMappable {
   final int index;
   final SpaceState state;
+  final int pointsMultiplier;
 
   const Space({
     required this.index,
     this.state = SpaceState.unmarked,
+    this.pointsMultiplier = 1,
   });
 
   bool get isMarked => state == SpaceState.marked;
-
   bool get isUnmarked => state == SpaceState.unmarked;
-
   bool get isBonus => state == SpaceState.bonus;
+  bool get hasPointsMultiplier => pointsMultiplier > 1;
 }
 
 @MappableEnum()
@@ -109,6 +109,11 @@ extension ListSpaceX on List<Space> {
     return List.unmodifiable(toList()..replaceAt(index, space));
   }
 
+  List<Space> setSpacePointsMultiplier(int index, int multiplier) {
+    final space = this[index].copyWith(pointsMultiplier: multiplier);
+    return List.unmodifiable(toList()..replaceAt(index, space));
+  }
+
   List<Space> markSpace(int index) => setSpaceState(index, SpaceState.marked);
 
   List<Space> markRandomSpace() => setSpaceState(getRandomUnmarkedSpace().index, SpaceState.marked);
@@ -145,7 +150,9 @@ extension ListSpaceX on List<Space> {
   }
 
   int calculateSpaceScore({required int index, int extent = 5}) {
-    if (!this[index].isMarked) {
+    final space = this[index];
+
+    if (!space.isMarked) {
       return 0;
     }
 
@@ -168,7 +175,7 @@ extension ListSpaceX on List<Space> {
       }
     }
 
-    return adjacentCount;
+    return adjacentCount * space.pointsMultiplier;
   }
 }
 

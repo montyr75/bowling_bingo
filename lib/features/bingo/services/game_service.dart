@@ -1,6 +1,7 @@
 import 'package:dartx/dartx.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
+import '../../../data/bonus.dart';
 import '../../../data/bowling_challenges.dart';
 import '../../../models/challenge_result.dart';
 import '../../../models/frame.dart';
@@ -61,7 +62,7 @@ class GameService extends _$GameService {
     );
   }
 
-  ({bool isBingo, bool isBonus}) onChallengeComplete({required Frame frameData, required bool isSuccess}) {
+  ({bool isBingo, Bonus? bonus}) onChallengeComplete({required Frame frameData, required bool isSuccess}) {
     GameState newState = _updateHistory(
       state,
       ChallengeResult(
@@ -87,7 +88,10 @@ class GameService extends _$GameService {
 
     state = _nextFrame(newState).clearChallenge();
 
-    return (isBingo: state.card.isBingo(bingoWinConditions5x5), isBonus: space.isBonus);
+    return (
+      isBingo: state.card.isBingo(bingoWinConditions5x5),
+      bonus: space.isBonus ? Bonus.getRandomBonus() : null,
+    );
   }
 
   bool markRandomSpace() {
@@ -99,6 +103,15 @@ class GameService extends _$GameService {
     );
 
     return state.card.isBingo(bingoWinConditions5x5);
+  }
+
+  void setPointsMultiplier(int index, int multiplier) {
+    final card = state.card.setSpacePointsMultiplier(index, multiplier);
+
+    state = state.copyWith(
+      card: card,
+      points: card.calculateScore(extent: 5),
+    );
   }
 
   void clearBingoCard() {

@@ -1,12 +1,11 @@
 import 'package:awesome_flutter_extensions/awesome_flutter_extensions.dart' hide Space;
-import 'package:extra_alignments/extra_alignments.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
 
+import '../../../data/bonus.dart';
 import '../../../models/frame.dart';
-import '../../../utils/popup_utils.dart';
 import '../../../utils/screen_utils.dart';
 import '../../../widgets/game_page_wrapper.dart';
 import '../../../widgets/grid_layout.dart';
@@ -63,16 +62,29 @@ class BingoPage extends StatelessWidget {
                   PageNavButton(
                     label: !state.isNewGame ? 'Next Turn' : 'Next Game',
                     onPressed: () => ref.read(gameServiceProvider.notifier).nextTurn(),
+                    // onPressed: () => _showBonus(),
                   ),
                 ] else
                   ChallengeDisplay(
                     challenge: state.challenge!.challenge,
                     strength: state.challenge!.strength,
                     onSuccess: (frame) {
-                      _onChallengeCompleted(context: context, ref: ref, frameData: frame, isSuccess: true);
+                      _onChallengeCompleted(
+                        context: context,
+                        ref: ref,
+                        challenge: state.challenge!,
+                        frameData: frame,
+                        isSuccess: true,
+                      );
                     },
                     onFailure: (frame) {
-                      _onChallengeCompleted(context: context, ref: ref, frameData: frame, isSuccess: false);
+                      _onChallengeCompleted(
+                        context: context,
+                        ref: ref,
+                        challenge: state.challenge!,
+                        frameData: frame,
+                        isSuccess: false,
+                      );
                     },
                   ).animate().fadeIn(duration: 300.ms),
               ],
@@ -86,6 +98,7 @@ class BingoPage extends StatelessWidget {
   Future<void> _onChallengeCompleted({
     required BuildContext context,
     required WidgetRef ref,
+    required Challenge challenge,
     required Frame frameData,
     required bool isSuccess,
   }) async {
@@ -95,10 +108,21 @@ class BingoPage extends StatelessWidget {
 
     if (result.isBingo) {
       await _showBingo();
-    } else if (result.isBonus) {
-      await showInfoDialog(context: context, title: "BONUS!", message: "Enjoy your free bonus space!");
+    } else if (result.bonus != null) {
+      await _showBonus(result.bonus!);
 
-      final isBingo = ref.read(gameServiceProvider.notifier).markRandomSpace();
+      bool isBingo = false;
+
+      switch (result.bonus) {
+        case Bonus.freeSpace:
+          isBingo = ref.read(gameServiceProvider.notifier).markRandomSpace();
+          break;
+        case Bonus.pointsMultiplier2:
+          ref.read(gameServiceProvider.notifier).setPointsMultiplier(challenge.space, 2);
+          break;
+        case null:
+          break;
+      }
 
       if (isBingo && context.mounted) {
         await _showBingo();
@@ -121,6 +145,47 @@ class BingoPage extends StatelessWidget {
                   left: 0,
                   right: 0,
                   bottom: 75,
+                  child: Text(
+                    '(tap to dismiss)',
+                    style: context.textStyles.titleMedium.copyWith(color: Colors.black),
+                    textAlign: TextAlign.center,
+                  ).animate().scale(delay: const Duration(seconds: 2)),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  Future<void> _showBonus(Bonus bonus) {
+    return SmartDialog.show(
+      builder: (context) {
+        return GestureDetector(
+          onTap: SmartDialog.dismiss,
+          child: SizedBox(
+            width: 400,
+            height: 267,
+            child: Stack(
+              children: [
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(lg),
+                  child: Image.asset('assets/images/bonus.png', width: 400),
+                ),
+                Positioned(
+                  left: 95,
+                  right: 95,
+                  bottom: 80,
+                  child: Text(
+                    bonus.message,
+                    style: context.textStyles.bodyLarge.copyWith(color: Colors.black),
+                  ).animate().fadeIn(),
+                ),
+                Positioned(
+                  left: 0,
+                  right: 0,
+                  bottom: 40,
                   child: Text(
                     '(tap to dismiss)',
                     style: context.textStyles.titleMedium.copyWith(color: Colors.black),
@@ -171,15 +236,27 @@ class BingoSpace extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final marker = ref.read(appServiceProvider).bingoMarker;
 
-    Widget content = child ?? const Text(' ');
+    List<Widget> content = [child ?? const Text(' ')];
 
     if (space.isMarked) {
-      content = Image.asset(marker.assetPath, fit: BoxFit.contain).animate().scale();
+      if (space.hasPointsMultiplier) {
+        content = [
+          Image.asset(marker.assetPath).animate().scale(),
+          Image.asset('assets/images/star.png'),
+        ];
+      } else {
+        content = [Image.asset(marker.assetPath).animate().scale()];
+      }
     } else if (space.isBonus) {
-      content = ColorFiltered(
-        colorFilter: const ColorFilter.mode(Colors.yellowAccent, BlendMode.srcATop),
-        child: Image.asset('assets/images/question_mark.png', fit: BoxFit.contain).animate().scale(),
-      );
+      content = [
+        Padding(
+          padding: const EdgeInsets.all(32.0),
+          child: ColorFiltered(
+            colorFilter: const ColorFilter.mode(Colors.yellowAccent, BlendMode.srcATop),
+            child: Image.asset('assets/images/question_mark.png').animate().scale(),
+          ),
+        ),
+      ];
     }
 
     return DecoratedBox(
@@ -187,14 +264,14 @@ class BingoSpace extends ConsumerWidget {
         image: DecorationImage(
           image: isSelected
               ? const AssetImage('assets/images/green_square.png')
-              : const AssetImage('assets/images/square.png'),
+              : const AssetImage('assets/images/grey_square.png'),
           fit: BoxFit.fill,
         ),
       ),
       child: FittedBox(
-        child: Padding(
-          padding: const EdgeInsets.all(32.0),
-          child: content,
+        fit: BoxFit.contain,
+        child: Stack(
+          children: content,
         ),
       ),
     );

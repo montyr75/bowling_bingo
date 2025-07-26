@@ -385,15 +385,22 @@ class SpaceMapper extends ClassMapperBase<Space> {
   static SpaceState _$state(Space v) => v.state;
   static const Field<Space, SpaceState> _f$state =
       Field('state', _$state, opt: true, def: SpaceState.unmarked);
+  static int _$pointsMultiplier(Space v) => v.pointsMultiplier;
+  static const Field<Space, int> _f$pointsMultiplier =
+      Field('pointsMultiplier', _$pointsMultiplier, opt: true, def: 1);
 
   @override
   final MappableFields<Space> fields = const {
     #index: _f$index,
     #state: _f$state,
+    #pointsMultiplier: _f$pointsMultiplier,
   };
 
   static Space _instantiate(DecodingData data) {
-    return Space(index: data.dec(_f$index), state: data.dec(_f$state));
+    return Space(
+        index: data.dec(_f$index),
+        state: data.dec(_f$state),
+        pointsMultiplier: data.dec(_f$pointsMultiplier));
   }
 
   @override
@@ -442,7 +449,7 @@ extension SpaceValueCopy<$R, $Out> on ObjectCopyWith<$R, Space, $Out> {
 
 abstract class SpaceCopyWith<$R, $In extends Space, $Out>
     implements ClassCopyWith<$R, $In, $Out> {
-  $R call({int? index, SpaceState? state});
+  $R call({int? index, SpaceState? state, int? pointsMultiplier});
   SpaceCopyWith<$R2, $In, $Out2> $chain<$R2, $Out2>(Then<$Out2, $R2> t);
 }
 
@@ -453,12 +460,18 @@ class _SpaceCopyWithImpl<$R, $Out> extends ClassCopyWithBase<$R, Space, $Out>
   @override
   late final ClassMapperBase<Space> $mapper = SpaceMapper.ensureInitialized();
   @override
-  $R call({int? index, SpaceState? state}) => $apply(FieldCopyWithData(
-      {if (index != null) #index: index, if (state != null) #state: state}));
+  $R call({int? index, SpaceState? state, int? pointsMultiplier}) =>
+      $apply(FieldCopyWithData({
+        if (index != null) #index: index,
+        if (state != null) #state: state,
+        if (pointsMultiplier != null) #pointsMultiplier: pointsMultiplier
+      }));
   @override
   Space $make(CopyWithData data) => Space(
       index: data.get(#index, or: $value.index),
-      state: data.get(#state, or: $value.state));
+      state: data.get(#state, or: $value.state),
+      pointsMultiplier:
+          data.get(#pointsMultiplier, or: $value.pointsMultiplier));
 
   @override
   SpaceCopyWith<$R2, Space, $Out2> $chain<$R2, $Out2>(Then<$Out2, $R2> t) =>
