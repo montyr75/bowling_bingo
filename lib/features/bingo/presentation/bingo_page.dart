@@ -5,10 +5,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
 
 import '../../../data/bonus.dart';
+import '../../../models/bingo_card.dart';
 import '../../../models/frame.dart';
 import '../../../utils/screen_utils.dart';
 import '../../../widgets/game_page_wrapper.dart';
-import '../../../widgets/grid_layout.dart';
 import '../../../widgets/page_nav_button.dart';
 import '../../../widgets/score_sheet.dart';
 import '../../app/services/app/app_service.dart';
@@ -28,40 +28,29 @@ class BingoPage extends StatelessWidget {
       children: [
         Consumer(
           builder: (context, ref, child) {
-            final history = ref.watch(gameServiceProvider.select((state) => state.history));
-
-            return Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                for (int i = 0; i < history.values.length; i++) ...[
-                  ScoreSheet(results: history.values.elementAt(i)).animate().slideY(),
-                  boxL,
-                ],
-              ],
-            );
-          },
-        ),
-        Consumer(
-          builder: (context, ref, child) {
             final state = ref.watch(gameServiceProvider);
+            final bowlingGameHistory = state.history[state.game] ?? const [];
 
             return Column(
               mainAxisSize: MainAxisSize.min,
               children: [
+                ScoreSheet(results: bowlingGameHistory),
+                boxL,
                 SizedBox(
                   width: size.width * 0.9,
-                  height: size.height * 0.4,
-                  child: BingoCard(
+                  child: BingoCardDisplay(
                     card: state.card,
                     currentSpace: state.challenge?.space,
                   ),
                 ),
-                boxM,
+                boxL,
                 if (!state.hasChallenge) ...[
                   boxM,
                   PageNavButton(
-                    label: !state.isNewGame ? 'Next Turn' : 'Next Game',
-                    onPressed: () => ref.read(gameServiceProvider.notifier).nextTurn(),
+                    label: !state.isGameOver ? 'Next Turn' : 'Next Game',
+                    onPressed: () => !state.isGameOver
+                        ? ref.read(gameServiceProvider.notifier).nextTurn()
+                        : ref.read(gameServiceProvider.notifier).nextGame(),
                     // onPressed: () => _showBonus(),
                   ),
                 ] else
@@ -201,21 +190,25 @@ class BingoPage extends StatelessWidget {
   }
 }
 
-class BingoCard extends StatelessWidget {
-  final List<Space> card;
+class BingoCardDisplay extends StatelessWidget {
+  final BingoCard card;
   final int? currentSpace;
 
-  const BingoCard({super.key, required this.card, this.currentSpace});
+  const BingoCardDisplay({super.key, required this.card, this.currentSpace});
 
   @override
   Widget build(BuildContext context) {
-    return GridLayout(
-      children: card.map((space) {
+    return GridView.builder(
+      itemCount: card.spaces.length,
+      shrinkWrap: true,
+      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: card.extent),
+      physics: const NeverScrollableScrollPhysics(),
+      itemBuilder: (context, index) {
         return BingoSpace(
-          space: space,
-          isSelected: currentSpace == space.index,
+          space: card[index],
+          isSelected: currentSpace == index,
         );
-      }).toList(),
+      },
     );
   }
 }
@@ -236,29 +229,6 @@ class BingoSpace extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final marker = ref.read(appServiceProvider).bingoMarker;
 
-    List<Widget> content = [child ?? const Text(' ')];
-
-    if (space.isMarked) {
-      if (space.hasPointsMultiplier) {
-        content = [
-          Image.asset(marker.assetPath).animate().scale(),
-          Image.asset('assets/images/star.png'),
-        ];
-      } else {
-        content = [Image.asset(marker.assetPath).animate().scale()];
-      }
-    } else if (space.isBonus) {
-      content = [
-        Padding(
-          padding: const EdgeInsets.all(32.0),
-          child: ColorFiltered(
-            colorFilter: const ColorFilter.mode(Colors.yellowAccent, BlendMode.srcATop),
-            child: Image.asset('assets/images/question_mark.png').animate().scale(),
-          ),
-        ),
-      ];
-    }
-
     return DecoratedBox(
       decoration: BoxDecoration(
         image: DecorationImage(
@@ -268,11 +238,41 @@ class BingoSpace extends ConsumerWidget {
           fit: BoxFit.fill,
         ),
       ),
-      child: FittedBox(
-        fit: BoxFit.contain,
-        child: Stack(
-          children: content,
-        ),
+      child: Stack(
+        children: switch (space.state) {
+          SpaceState.unmarked => const [],
+          SpaceState.bonus => [
+            ColorFiltered(
+              colorFilter: const ColorFilter.mode(Colors.yellowAccent, BlendMode.srcATop),
+              child: LayoutBuilder(
+                builder: (context, constraints) {
+                  return Center(
+                    child: Image.asset(
+                      'assets/images/question_mark.png',
+                      width: constraints.maxWidth * 0.35,
+                    ).animate().scale(),
+                  );
+                },
+              ),
+            ),
+          ],
+          SpaceState.marked =>
+            !space.hasPointsMultiplier
+                ? [Image.asset(marker.assetPath).animate().scale()]
+                : [
+                    Image.asset(marker.assetPath).animate().scale(),
+                    LayoutBuilder(
+                      builder: (context, constraints) {
+                        return Center(
+                          child: Image.asset(
+                            'assets/images/x2.png',
+                            width: constraints.maxWidth * 0.25,
+                          ).animate().scale(delay: const Duration(milliseconds: 500)),
+                        );
+                      },
+                    ),
+                  ],
+        },
       ),
     );
   }

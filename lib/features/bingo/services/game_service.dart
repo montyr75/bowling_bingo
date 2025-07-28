@@ -18,7 +18,7 @@ class GameService extends _$GameService {
   GameState build() {
     // final appState = ref.read(appServiceProvider);
 
-    return const GameState().initialize5By5();
+    return const GameState().init();
   }
 
   void restore(GameState value) {
@@ -26,7 +26,7 @@ class GameService extends _$GameService {
   }
 
   void nextTurn() {
-    final availableSpaces = state.card.where((space) => !space.isMarked).toList()..shuffle();
+    final availableSpaces = state.card.getUnmarkedSpaces().toList()..shuffle();
     final bowlerLevel = ref.read(appServiceProvider).bowlerLevel;
 
     late final int lvl;
@@ -78,18 +78,19 @@ class GameService extends _$GameService {
     final space = state.card[state.challenge!.space];
 
     if (isSuccess) {
-      final card = state.card.markSpace(space.index);
-
       newState = newState.copyWith(
-        card: card,
-        points: card.calculateScore(extent: 5),
+        card: state.card.markSpace(space.index),
       );
     }
 
-    state = _nextFrame(newState).clearChallenge();
+    if (state.frame < 10) {
+      newState = _nextFrame(newState);
+    }
+
+    state = newState.clearChallenge();
 
     return (
-      isBingo: state.card.isBingo(bingoWinConditions5x5),
+      isBingo: state.card.isBingo,
       bonus: space.isBonus ? Bonus.getRandomBonus() : null,
     );
   }
@@ -99,10 +100,9 @@ class GameService extends _$GameService {
 
     state = state.copyWith(
       card: card,
-      points: card.calculateScore(extent: 5),
     );
 
-    return state.card.isBingo(bingoWinConditions5x5);
+    return state.card.isBingo;
   }
 
   void setPointsMultiplier(int index, int multiplier) {
@@ -110,20 +110,23 @@ class GameService extends _$GameService {
 
     state = state.copyWith(
       card: card,
-      points: card.calculateScore(extent: 5),
     );
   }
 
   void clearBingoCard() {
-    state = state.initialize5By5();
+    state = state.init(extent: state.card.extent);
+  }
+
+  void nextGame() {
+    state = state.copyWith(
+      game: state.game + 1,
+      frame: 1,
+    );
   }
 
   GameState _nextFrame(GameState state) {
-    final isNewGame = state.frame == 10;
-
     return state.copyWith(
-      game: isNewGame ? state.game + 1 : null,
-      frame: !isNewGame ? state.frame + 1 : 1,
+      frame: state.frame + 1,
     );
   }
 

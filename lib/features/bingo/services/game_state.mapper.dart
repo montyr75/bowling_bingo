@@ -6,56 +6,6 @@
 
 part of 'game_state.dart';
 
-class SpaceStateMapper extends EnumMapper<SpaceState> {
-  SpaceStateMapper._();
-
-  static SpaceStateMapper? _instance;
-  static SpaceStateMapper ensureInitialized() {
-    if (_instance == null) {
-      MapperContainer.globals.use(_instance = SpaceStateMapper._());
-    }
-    return _instance!;
-  }
-
-  static SpaceState fromValue(dynamic value) {
-    ensureInitialized();
-    return MapperContainer.globals.fromValue(value);
-  }
-
-  @override
-  SpaceState decode(dynamic value) {
-    switch (value) {
-      case r'unmarked':
-        return SpaceState.unmarked;
-      case r'marked':
-        return SpaceState.marked;
-      case r'bonus':
-        return SpaceState.bonus;
-      default:
-        throw MapperException.unknownEnumValue(value);
-    }
-  }
-
-  @override
-  dynamic encode(SpaceState self) {
-    switch (self) {
-      case SpaceState.unmarked:
-        return r'unmarked';
-      case SpaceState.marked:
-        return r'marked';
-      case SpaceState.bonus:
-        return r'bonus';
-    }
-  }
-}
-
-extension SpaceStateMapperExtension on SpaceState {
-  String toValue() {
-    SpaceStateMapper.ensureInitialized();
-    return MapperContainer.globals.toValue<SpaceState>(this) as String;
-  }
-}
-
 class GameStateMapper extends ClassMapperBase<GameState> {
   GameStateMapper._();
 
@@ -64,7 +14,7 @@ class GameStateMapper extends ClassMapperBase<GameState> {
     if (_instance == null) {
       MapperContainer.globals.use(_instance = GameStateMapper._());
       ChallengeMapper.ensureInitialized();
-      SpaceMapper.ensureInitialized();
+      BingoCardMapper.ensureInitialized();
       ChallengeResultBaseMapper.ensureInitialized();
     }
     return _instance!;
@@ -82,12 +32,9 @@ class GameStateMapper extends ClassMapperBase<GameState> {
   static Challenge? _$challenge(GameState v) => v.challenge;
   static const Field<GameState, Challenge> _f$challenge =
       Field('challenge', _$challenge, opt: true);
-  static int _$points(GameState v) => v.points;
-  static const Field<GameState, int> _f$points =
-      Field('points', _$points, opt: true, def: 0);
-  static List<Space> _$card(GameState v) => v.card;
-  static const Field<GameState, List<Space>> _f$card =
-      Field('card', _$card, opt: true, def: const []);
+  static BingoCard _$card(GameState v) => v.card;
+  static const Field<GameState, BingoCard> _f$card =
+      Field('card', _$card, opt: true, def: const BingoCard());
   static Map<int, List<ChallengeResultBase>> _$history(GameState v) =>
       v.history;
   static const Field<GameState, Map<int, List<ChallengeResultBase>>>
@@ -98,7 +45,6 @@ class GameStateMapper extends ClassMapperBase<GameState> {
     #game: _f$game,
     #frame: _f$frame,
     #challenge: _f$challenge,
-    #points: _f$points,
     #card: _f$card,
     #history: _f$history,
   };
@@ -108,7 +54,6 @@ class GameStateMapper extends ClassMapperBase<GameState> {
         game: data.dec(_f$game),
         frame: data.dec(_f$frame),
         challenge: data.dec(_f$challenge),
-        points: data.dec(_f$points),
         card: data.dec(_f$card),
         history: data.dec(_f$history));
   }
@@ -165,7 +110,7 @@ extension GameStateValueCopy<$R, $Out> on ObjectCopyWith<$R, GameState, $Out> {
 abstract class GameStateCopyWith<$R, $In extends GameState, $Out>
     implements ClassCopyWith<$R, $In, $Out> {
   ChallengeCopyWith<$R, Challenge, Challenge>? get challenge;
-  ListCopyWith<$R, Space, SpaceCopyWith<$R, Space, Space>> get card;
+  BingoCardCopyWith<$R, BingoCard, BingoCard> get card;
   MapCopyWith<
       $R,
       int,
@@ -176,8 +121,7 @@ abstract class GameStateCopyWith<$R, $In extends GameState, $Out>
       {int? game,
       int? frame,
       Challenge? challenge,
-      int? points,
-      List<Space>? card,
+      BingoCard? card,
       Map<int, List<ChallengeResultBase>>? history});
   GameStateCopyWith<$R2, $In, $Out2> $chain<$R2, $Out2>(Then<$Out2, $R2> t);
 }
@@ -194,9 +138,8 @@ class _GameStateCopyWithImpl<$R, $Out>
   ChallengeCopyWith<$R, Challenge, Challenge>? get challenge =>
       $value.challenge?.copyWith.$chain((v) => call(challenge: v));
   @override
-  ListCopyWith<$R, Space, SpaceCopyWith<$R, Space, Space>> get card =>
-      ListCopyWith(
-          $value.card, (v, t) => v.copyWith.$chain(t), (v) => call(card: v));
+  BingoCardCopyWith<$R, BingoCard, BingoCard> get card =>
+      $value.card.copyWith.$chain((v) => call(card: v));
   @override
   MapCopyWith<
       $R,
@@ -210,14 +153,12 @@ class _GameStateCopyWithImpl<$R, $Out>
           {int? game,
           int? frame,
           Object? challenge = $none,
-          int? points,
-          List<Space>? card,
+          BingoCard? card,
           Map<int, List<ChallengeResultBase>>? history}) =>
       $apply(FieldCopyWithData({
         if (game != null) #game: game,
         if (frame != null) #frame: frame,
         if (challenge != $none) #challenge: challenge,
-        if (points != null) #points: points,
         if (card != null) #card: card,
         if (history != null) #history: history
       }));
@@ -226,7 +167,6 @@ class _GameStateCopyWithImpl<$R, $Out>
       game: data.get(#game, or: $value.game),
       frame: data.get(#frame, or: $value.frame),
       challenge: data.get(#challenge, or: $value.challenge),
-      points: data.get(#points, or: $value.points),
       card: data.get(#card, or: $value.card),
       history: data.get(#history, or: $value.history));
 
@@ -363,117 +303,4 @@ class _ChallengeCopyWithImpl<$R, $Out>
   ChallengeCopyWith<$R2, Challenge, $Out2> $chain<$R2, $Out2>(
           Then<$Out2, $R2> t) =>
       _ChallengeCopyWithImpl<$R2, $Out2>($value, $cast, t);
-}
-
-class SpaceMapper extends ClassMapperBase<Space> {
-  SpaceMapper._();
-
-  static SpaceMapper? _instance;
-  static SpaceMapper ensureInitialized() {
-    if (_instance == null) {
-      MapperContainer.globals.use(_instance = SpaceMapper._());
-      SpaceStateMapper.ensureInitialized();
-    }
-    return _instance!;
-  }
-
-  @override
-  final String id = 'Space';
-
-  static int _$index(Space v) => v.index;
-  static const Field<Space, int> _f$index = Field('index', _$index);
-  static SpaceState _$state(Space v) => v.state;
-  static const Field<Space, SpaceState> _f$state =
-      Field('state', _$state, opt: true, def: SpaceState.unmarked);
-  static int _$pointsMultiplier(Space v) => v.pointsMultiplier;
-  static const Field<Space, int> _f$pointsMultiplier =
-      Field('pointsMultiplier', _$pointsMultiplier, opt: true, def: 1);
-
-  @override
-  final MappableFields<Space> fields = const {
-    #index: _f$index,
-    #state: _f$state,
-    #pointsMultiplier: _f$pointsMultiplier,
-  };
-
-  static Space _instantiate(DecodingData data) {
-    return Space(
-        index: data.dec(_f$index),
-        state: data.dec(_f$state),
-        pointsMultiplier: data.dec(_f$pointsMultiplier));
-  }
-
-  @override
-  final Function instantiate = _instantiate;
-
-  static Space fromMap(Map<String, dynamic> map) {
-    return ensureInitialized().decodeMap<Space>(map);
-  }
-
-  static Space fromJson(String json) {
-    return ensureInitialized().decodeJson<Space>(json);
-  }
-}
-
-mixin SpaceMappable {
-  String toJson() {
-    return SpaceMapper.ensureInitialized().encodeJson<Space>(this as Space);
-  }
-
-  Map<String, dynamic> toMap() {
-    return SpaceMapper.ensureInitialized().encodeMap<Space>(this as Space);
-  }
-
-  SpaceCopyWith<Space, Space, Space> get copyWith =>
-      _SpaceCopyWithImpl<Space, Space>(this as Space, $identity, $identity);
-  @override
-  String toString() {
-    return SpaceMapper.ensureInitialized().stringifyValue(this as Space);
-  }
-
-  @override
-  bool operator ==(Object other) {
-    return SpaceMapper.ensureInitialized().equalsValue(this as Space, other);
-  }
-
-  @override
-  int get hashCode {
-    return SpaceMapper.ensureInitialized().hashValue(this as Space);
-  }
-}
-
-extension SpaceValueCopy<$R, $Out> on ObjectCopyWith<$R, Space, $Out> {
-  SpaceCopyWith<$R, Space, $Out> get $asSpace =>
-      $base.as((v, t, t2) => _SpaceCopyWithImpl<$R, $Out>(v, t, t2));
-}
-
-abstract class SpaceCopyWith<$R, $In extends Space, $Out>
-    implements ClassCopyWith<$R, $In, $Out> {
-  $R call({int? index, SpaceState? state, int? pointsMultiplier});
-  SpaceCopyWith<$R2, $In, $Out2> $chain<$R2, $Out2>(Then<$Out2, $R2> t);
-}
-
-class _SpaceCopyWithImpl<$R, $Out> extends ClassCopyWithBase<$R, Space, $Out>
-    implements SpaceCopyWith<$R, Space, $Out> {
-  _SpaceCopyWithImpl(super.value, super.then, super.then2);
-
-  @override
-  late final ClassMapperBase<Space> $mapper = SpaceMapper.ensureInitialized();
-  @override
-  $R call({int? index, SpaceState? state, int? pointsMultiplier}) =>
-      $apply(FieldCopyWithData({
-        if (index != null) #index: index,
-        if (state != null) #state: state,
-        if (pointsMultiplier != null) #pointsMultiplier: pointsMultiplier
-      }));
-  @override
-  Space $make(CopyWithData data) => Space(
-      index: data.get(#index, or: $value.index),
-      state: data.get(#state, or: $value.state),
-      pointsMultiplier:
-          data.get(#pointsMultiplier, or: $value.pointsMultiplier));
-
-  @override
-  SpaceCopyWith<$R2, Space, $Out2> $chain<$R2, $Out2>(Then<$Out2, $R2> t) =>
-      _SpaceCopyWithImpl<$R2, $Out2>($value, $cast, t);
 }
