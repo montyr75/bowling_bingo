@@ -241,4 +241,10 @@ extension BowlingGamesX on Map<int, List<ChallengeResultBase>> {
 
     return 100 - percentSuccess;
   }
+
+  int get seriesTotal {
+    return <int>[
+      for (final game in values) game.last.frameData.score ?? 0,
+    ].sum();
+  }
 }

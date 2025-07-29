@@ -54,6 +54,11 @@ AppBar buildGameBar() {
                       style: styles.bodySmall.copyWith(fontStyle: FontStyle.italic),
                     ),
                     boxS,
+                    Text(
+                      "Game: ${gameState.game}",
+                      style: styles.labelMedium,
+                    ),
+                    boxS,
                     Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [

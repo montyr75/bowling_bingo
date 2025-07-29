@@ -6,6 +6,7 @@ import 'package:go_router/go_router.dart';
 import '../features/bingo/services/game_service.dart';
 import '../utils/popup_utils.dart';
 import '../utils/screen_utils.dart';
+import 'bg_bubble.dart';
 import 'page_nav_button.dart';
 import 'score_sheet.dart';
 import 'success_rate_bubble.dart';
@@ -36,11 +37,14 @@ class StatsPage extends ConsumerWidget {
                     child: Column(
                       children: [
                         const SuccessRateBubble(),
-                        boxXXL,
                         for (final history in state.history.values) ...[
                           boxXXL,
                           ScoreSheet(results: history),
                         ],
+                        boxM,
+                        BgBubble(
+                          child: Text("Series: ${state.history.seriesTotal}"),
+                        ),
                         boxXXL,
                         PageNavButton(
                           label: 'Clear Bingo Card',
