@@ -4,8 +4,8 @@ part 'bonus.mapper.dart';
 
 @MappableEnum()
 enum Bonus {
-  freeSpace('Enjoy your free bonus space!'),
-  pointsMultiplier2('Double points for this space!');
+  freeSpace('Free Space!'),
+  pointsMultiplier2('Double Points!');
 
   final String message;
 

@@ -91,7 +91,7 @@ class GameService extends _$GameService {
 
     return (
       isBingo: state.card.isBingo,
-      bonus: space.isBonus ? Bonus.getRandomBonus() : null,
+      bonus: space.isBonus && isSuccess ? Bonus.getRandomBonus() : null,
     );
   }
 
@@ -122,6 +122,8 @@ class GameService extends _$GameService {
       game: state.game + 1,
       frame: 1,
     );
+
+    nextTurn();
   }
 
   GameState _nextFrame(GameState state) {

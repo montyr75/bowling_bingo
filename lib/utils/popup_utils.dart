@@ -7,7 +7,7 @@ import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
 import 'screen_utils.dart';
 import 'utils.dart';
 
-const dialogMaxWidth = 400.0;
+const dialogMaxWidth = 350.0;
 
 Future<void> showConfirmDialog({
   required BuildContext context,
@@ -17,10 +17,12 @@ Future<void> showConfirmDialog({
   String? noMsg,
   required VoidCallback onConfirm,
   bool autoDismiss = true,
+  bool barrierDismissable = true,
 }) {
   final styles = context.textStyles;
 
   return SmartDialog.show(
+    clickMaskDismiss: barrierDismissable,
     builder: (_) {
       return FantasyDialog(
         title: Text(title ?? "Are you sure?", style: styles.titleLarge),

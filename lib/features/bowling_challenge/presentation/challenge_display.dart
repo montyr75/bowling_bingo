@@ -253,6 +253,7 @@ class ChallengeDisplay extends ConsumerWidget {
                         message: "You have failed! Better luck next time.",
                         yesMsg: "Confirm Failure",
                         noMsg: "Cancel",
+                        barrierDismissable: false,
                         onConfirm: () => onFailure(state.frame),
                       );
                     },
@@ -269,6 +270,7 @@ class ChallengeDisplay extends ConsumerWidget {
                         message: "You've bested the challenge!",
                         yesMsg: "Confirm Success",
                         noMsg: "Cancel",
+                        barrierDismissable: false,
                         onConfirm: () => onSuccess(state.frame),
                       );
                     },

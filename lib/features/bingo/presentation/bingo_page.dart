@@ -1,4 +1,5 @@
 import 'package:awesome_flutter_extensions/awesome_flutter_extensions.dart' hide Space;
+import 'package:extra_alignments/extra_alignments.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -7,6 +8,7 @@ import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
 import '../../../data/bonus.dart';
 import '../../../models/bingo_card.dart';
 import '../../../models/frame.dart';
+import '../../../utils/popup_utils.dart';
 import '../../../utils/screen_utils.dart';
 import '../../../widgets/game_page_wrapper.dart';
 import '../../../widgets/page_nav_button.dart';
@@ -125,15 +127,13 @@ class BingoPage extends StatelessWidget {
         return GestureDetector(
           onTap: SmartDialog.dismiss,
           child: SizedBox(
-            width: 400,
-            height: 267,
+            width: dialogMaxWidth,
+            height: 233,
             child: Stack(
               children: [
-                Image.asset('assets/images/bingo.png', width: 400),
-                Positioned(
-                  left: 0,
-                  right: 0,
-                  bottom: 75,
+                Image.asset('assets/images/bingo.png', width: dialogMaxWidth),
+                Align(
+                  alignment: const Alignment(0, 0.4),
                   child: Text(
                     '(tap to dismiss)',
                     style: context.textStyles.titleMedium.copyWith(color: Colors.black),
@@ -154,27 +154,23 @@ class BingoPage extends StatelessWidget {
         return GestureDetector(
           onTap: SmartDialog.dismiss,
           child: SizedBox(
-            width: 400,
-            height: 267,
+            width: dialogMaxWidth,
+            height: 233,
             child: Stack(
               children: [
                 ClipRRect(
                   borderRadius: BorderRadius.circular(lg),
-                  child: Image.asset('assets/images/bonus.png', width: 400),
+                  child: Image.asset('assets/images/bonus.png', width: dialogMaxWidth),
                 ),
-                Positioned(
-                  left: 95,
-                  right: 95,
-                  bottom: 80,
+                Align(
+                  alignment: const Alignment(0, 0.2),
                   child: Text(
                     bonus.message,
                     style: context.textStyles.bodyLarge.copyWith(color: Colors.black),
                   ).animate().fadeIn(),
                 ),
-                Positioned(
-                  left: 0,
-                  right: 0,
-                  bottom: 40,
+                Align(
+                  alignment: const Alignment(0, 0.65),
                   child: Text(
                     '(tap to dismiss)',
                     style: context.textStyles.titleMedium.copyWith(color: Colors.black),
@@ -256,22 +252,20 @@ class BingoSpace extends ConsumerWidget {
               ),
             ),
           ],
-          SpaceState.marked =>
-            !space.hasPointsMultiplier
-                ? [Image.asset(marker.assetPath).animate().scale()]
-                : [
-                    Image.asset(marker.assetPath).animate().scale(),
-                    LayoutBuilder(
-                      builder: (context, constraints) {
-                        return Center(
-                          child: Image.asset(
-                            'assets/images/x2.png',
-                            width: constraints.maxWidth * 0.25,
-                          ).animate().scale(delay: const Duration(milliseconds: 500)),
-                        );
-                      },
-                    ),
-                  ],
+          SpaceState.marked => [
+            Image.asset(marker.assetPath).animate().scale(),
+            if (space.hasPointsMultiplier)
+              LayoutBuilder(
+                builder: (context, constraints) {
+                  return TopRight(
+                    child: Image.asset(
+                      'assets/images/x2.png',
+                      width: constraints.maxWidth * 0.25,
+                    ).animate().scale(delay: const Duration(milliseconds: 500)),
+                  );
+                },
+              ),
+          ],
         },
       ),
     );
