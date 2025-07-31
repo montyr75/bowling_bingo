@@ -31,12 +31,11 @@ class BingoPage extends StatelessWidget {
         Consumer(
           builder: (context, ref, child) {
             final state = ref.watch(gameServiceProvider);
-            final bowlingGameHistory = state.history[state.game] ?? const [];
 
             return Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                ScoreSheet(results: bowlingGameHistory),
+                state.currentGame != null ? ScoreSheet(game: state.currentGame!) : const ScoreSheet(),
                 boxL,
                 SizedBox(
                   width: size.width * 0.9,
@@ -138,7 +137,7 @@ class BingoPage extends StatelessWidget {
                     '(tap to dismiss)',
                     style: context.textStyles.titleMedium.copyWith(color: Colors.black),
                     textAlign: TextAlign.center,
-                  ).animate().scale(delay: const Duration(seconds: 2)),
+                  ).animate().scale(delay: const Duration(seconds: 1)),
                 ),
               ],
             ),
@@ -175,7 +174,7 @@ class BingoPage extends StatelessWidget {
                     '(tap to dismiss)',
                     style: context.textStyles.titleMedium.copyWith(color: Colors.black),
                     textAlign: TextAlign.center,
-                  ).animate().scale(delay: const Duration(seconds: 2)),
+                  ).animate().scale(delay: const Duration(seconds: 1)),
                 ),
               ],
             ),
@@ -261,7 +260,7 @@ class BingoSpace extends ConsumerWidget {
                     child: Image.asset(
                       'assets/images/x2.png',
                       width: constraints.maxWidth * 0.25,
-                    ).animate().scale(delay: const Duration(milliseconds: 500)),
+                    ).animate().scale(delay: const Duration(milliseconds: 300)),
                   );
                 },
               ),

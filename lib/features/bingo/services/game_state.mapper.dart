@@ -15,7 +15,7 @@ class GameStateMapper extends ClassMapperBase<GameState> {
       MapperContainer.globals.use(_instance = GameStateMapper._());
       ChallengeMapper.ensureInitialized();
       BingoCardMapper.ensureInitialized();
-      ChallengeResultBaseMapper.ensureInitialized();
+      BowlingGameMapper.ensureInitialized();
     }
     return _instance!;
   }
@@ -35,10 +35,9 @@ class GameStateMapper extends ClassMapperBase<GameState> {
   static BingoCard _$card(GameState v) => v.card;
   static const Field<GameState, BingoCard> _f$card =
       Field('card', _$card, opt: true, def: const BingoCard());
-  static Map<int, List<ChallengeResultBase>> _$history(GameState v) =>
-      v.history;
-  static const Field<GameState, Map<int, List<ChallengeResultBase>>>
-      _f$history = Field('history', _$history, opt: true, def: const {});
+  static Map<int, BowlingGame> _$history(GameState v) => v.history;
+  static const Field<GameState, Map<int, BowlingGame>> _f$history =
+      Field('history', _$history, opt: true, def: const {});
 
   @override
   final MappableFields<GameState> fields = const {
@@ -111,18 +110,14 @@ abstract class GameStateCopyWith<$R, $In extends GameState, $Out>
     implements ClassCopyWith<$R, $In, $Out> {
   ChallengeCopyWith<$R, Challenge, Challenge>? get challenge;
   BingoCardCopyWith<$R, BingoCard, BingoCard> get card;
-  MapCopyWith<
-      $R,
-      int,
-      List<ChallengeResultBase>,
-      ObjectCopyWith<$R, List<ChallengeResultBase>,
-          List<ChallengeResultBase>>> get history;
+  MapCopyWith<$R, int, BowlingGame,
+      BowlingGameCopyWith<$R, BowlingGame, BowlingGame>> get history;
   $R call(
       {int? game,
       int? frame,
       Challenge? challenge,
       BingoCard? card,
-      Map<int, List<ChallengeResultBase>>? history});
+      Map<int, BowlingGame>? history});
   GameStateCopyWith<$R2, $In, $Out2> $chain<$R2, $Out2>(Then<$Out2, $R2> t);
 }
 
@@ -141,20 +136,17 @@ class _GameStateCopyWithImpl<$R, $Out>
   BingoCardCopyWith<$R, BingoCard, BingoCard> get card =>
       $value.card.copyWith.$chain((v) => call(card: v));
   @override
-  MapCopyWith<
-      $R,
-      int,
-      List<ChallengeResultBase>,
-      ObjectCopyWith<$R, List<ChallengeResultBase>,
-          List<ChallengeResultBase>>> get history => MapCopyWith($value.history,
-      (v, t) => ObjectCopyWith(v, $identity, t), (v) => call(history: v));
+  MapCopyWith<$R, int, BowlingGame,
+          BowlingGameCopyWith<$R, BowlingGame, BowlingGame>>
+      get history => MapCopyWith($value.history, (v, t) => v.copyWith.$chain(t),
+          (v) => call(history: v));
   @override
   $R call(
           {int? game,
           int? frame,
           Object? challenge = $none,
           BingoCard? card,
-          Map<int, List<ChallengeResultBase>>? history}) =>
+          Map<int, BowlingGame>? history}) =>
       $apply(FieldCopyWithData({
         if (game != null) #game: game,
         if (frame != null) #frame: frame,

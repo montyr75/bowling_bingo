@@ -7,6 +7,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 import '../features/app/services/app/app_service.dart';
 import '../features/bingo/services/game_service.dart';
+import '../features/bingo/services/game_state.dart';
 import '../utils/screen_utils.dart';
 
 AppBar buildGameBar() {

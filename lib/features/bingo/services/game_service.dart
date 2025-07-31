@@ -3,6 +3,7 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../../../data/bonus.dart';
 import '../../../data/bowling_challenges.dart';
+import '../../../models/bowling_game.dart';
 import '../../../models/challenge_result.dart';
 import '../../../models/frame.dart';
 import '../../../utils/roller.dart';
@@ -118,9 +119,13 @@ class GameService extends _$GameService {
   }
 
   void nextGame() {
+    final history = state.history.toMap();
+    history[state.game + 1] = const BowlingGame();
+
     state = state.copyWith(
       game: state.game + 1,
       frame: 1,
+      history: Map.unmodifiable(history),
     );
 
     nextTurn();
@@ -134,67 +139,11 @@ class GameService extends _$GameService {
 
   GameState _updateHistory(GameState state, ChallengeResultBase challengeResult) {
     final history = state.history.toMap();
-    history[state.game] = _scoreGame((history[state.game]?.toList() ?? <ChallengeResultBase>[])..add(challengeResult));
+    history[state.game] = history[state.game]!.add(challengeResult);
 
     return state.copyWith(
-      history: Map<int, List<ChallengeResultBase>>.unmodifiable(history),
+      history: Map<int, BowlingGame>.unmodifiable(history),
     );
-  }
-
-  List<ChallengeResultBase> _scoreGame(List<ChallengeResultBase> game) {
-    int score = 0;
-
-    final frames = game.map((result) => result.frameData).toList();
-
-    return game.map((result) {
-      final frameScore = _scoreFrame(result.frame - 1, frames);
-
-      if (frameScore != null) {
-        return result.copyWith(
-          frameData: result.frameData.copyWith(
-            score: score += frameScore,
-          ),
-        );
-      }
-
-      return result;
-    }).toList();
-  }
-
-  int? _scoreFrame(int frameIndex, List<Frame> frames) {
-    final frame = frames[frameIndex];
-
-    int? score;
-
-    if (frame is TenthFrame) {
-      if (frame.isStrike) {
-        final nextTwoThrows = frame.throws.skip(1).whereNotNull();
-        score = 10 + nextTwoThrows.sum();
-      } else if (frame.isSpare) {
-        score = 10 + (frame.thirdThrow ?? 0);
-      } else {
-        score = frame.throws.whereNotNull().sum();
-      }
-    } else {
-      final nextTwoThrows = [
-        if (frames.length >= frameIndex + 2) ...frames[frameIndex + 1].throws,
-        if (frames.length >= frameIndex + 3) ...frames[frameIndex + 2].throws,
-      ].whereNotNull().take(2);
-
-      if (frame.isStrike) {
-        if (nextTwoThrows.length == 2) {
-          score = 10 + nextTwoThrows.sum();
-        }
-      } else if (frame.isSpare) {
-        if (nextTwoThrows.isNotEmpty) {
-          score = 10 + nextTwoThrows.first;
-        }
-      } else {
-        score = frame.throws.whereNotNull().sum();
-      }
-    }
-
-    return score;
   }
 
   // void _saveState() {
@@ -202,49 +151,10 @@ class GameService extends _$GameService {
   // }
 }
 
-extension BowlingGamesX on Map<int, List<ChallengeResultBase>> {
-  int get totalWon {
-    int total = 0;
-
-    for (final game in values) {
-      total += game.count((value) => value.isSuccess);
-    }
-
-    return total;
-  }
-
-  int get totalChallenges {
-    int total = 0;
-
-    for (final game in values) {
-      total += game.length;
-    }
-
-    return total;
-  }
-
-  int get percentSuccess {
-    final totalChallenges = this.totalChallenges;
-    final totalWon = this.totalWon;
-
-    if (totalChallenges == 0 || totalWon == 0) {
-      return 0;
-    }
-
-    return (totalWon / totalChallenges * 100).round();
-  }
-
-  int get percentFailure {
-    if (totalChallenges == 0) {
-      return 0;
-    }
-
-    return 100 - percentSuccess;
-  }
-
+extension BowlingGamesX on Map<int, BowlingGame> {
   int get seriesTotal {
     return <int>[
-      for (final game in values) game.last.frameData.score ?? 0,
+      for (final game in values) game.score,
     ].sum();
   }
 }

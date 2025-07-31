@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../features/app/services/app/app_service.dart';
 import '../features/bingo/services/game_service.dart';
+import '../features/bingo/services/game_state.dart';
 import '../utils/screen_utils.dart';
 import 'bg_bubble.dart';
 

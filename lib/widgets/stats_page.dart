@@ -37,9 +37,9 @@ class StatsPage extends ConsumerWidget {
                     child: Column(
                       children: [
                         const SuccessRateBubble(),
-                        for (final history in state.history.values) ...[
+                        for (final game in state.history.values) ...[
                           boxXXL,
-                          ScoreSheet(results: history),
+                          ScoreSheet(game: game),
                         ],
                         boxM,
                         BgBubble(
@@ -47,8 +47,7 @@ class StatsPage extends ConsumerWidget {
                         ),
                         boxXXL,
                         PageNavButton(
-                          label: 'Clear Bingo Card',
-                          width: 200,
+                          label: 'New Bingo Card',
                           onPressed: () {
                             showConfirmDialog(
                               context: context,

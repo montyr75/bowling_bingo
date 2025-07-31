@@ -1,7 +1,9 @@
 import 'package:dart_mappable/dart_mappable.dart';
+import 'package:dartx/dartx.dart';
 
 import '../../../data/bowling_challenges.dart';
 import '../../../models/bingo_card.dart';
+import '../../../models/bowling_game.dart';
 import '../../../models/challenge_result.dart';
 
 part 'game_state.mapper.dart';
@@ -12,14 +14,14 @@ class GameState with GameStateMappable {
   final int frame;
   final Challenge? challenge; // index of space in contention
   final BingoCard card;
-  final Map<int, List<ChallengeResultBase>> history;
+  final Map<int, BowlingGame> history;
 
   const GameState({
     this.game = 1,
     this.frame = 1,
     this.challenge,
     this.card = const BingoCard(),
-    this.history = const {},
+    this.history = const {1: BowlingGame()},
   });
 
   GameState init({int extent = 5}) {
@@ -39,9 +41,11 @@ class GameState with GameStateMappable {
 
   bool get hasChallenge => challenge != null;
 
-  bool get isGameOver => (history[game] ?? const []).length == 10;
+  bool get isGameOver => (currentGame ?? const BowlingGame()).isGameOver;
 
   int get points => card.score;
+
+  BowlingGame? get currentGame => history[game];
 }
 
 @MappableClass()
@@ -55,4 +59,26 @@ class Challenge with ChallengeMappable {
     required this.challenge,
     this.strength,
   });
+}
+
+extension MapBowlingGameX on Map<int, BowlingGame> {
+  List<ChallengeResultBase> get fullHistory => [
+    for (final game in values) ...game.results,
+  ];
+
+  int get percentSuccess {
+    final fullHistory = this.fullHistory;
+
+    final totalChallenges = fullHistory.length;
+
+    final totalWon = fullHistory.count((value) => value.isSuccess);
+
+    if (totalChallenges == 0 || totalWon == 0) {
+      return 0;
+    }
+
+    return (totalWon / totalChallenges * 100).round();
+  }
+
+  int get seriesTotal => values.map((game) => game.score).sum();
 }

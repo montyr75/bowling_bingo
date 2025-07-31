@@ -22,6 +22,7 @@ abstract class ChallengeResultBase with ChallengeResultBaseMappable {
   });
 
   bool get isFailure => !isSuccess;
+  bool get hasScore => frameData.score != null;
 }
 
 @MappableClass()

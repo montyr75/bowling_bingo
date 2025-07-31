@@ -1,6 +1,7 @@
 import 'package:awesome_flutter_extensions/awesome_flutter_extensions.dart';
 import 'package:flutter/material.dart';
 
+import '../models/bowling_game.dart';
 import '../models/challenge_result.dart';
 import '../models/frame.dart';
 import '../utils/screen_utils.dart';
@@ -14,16 +15,16 @@ const boxSizeFactor = .47;
 const tenthFrameBoxSizeFactor = .315;
 
 class ScoreSheet extends StatelessWidget {
-  final List<ChallengeResultBase> results;
+  final BowlingGame game;
 
-  const ScoreSheet({super.key, this.results = const []});
+  const ScoreSheet({super.key, this.game = const BowlingGame()});
 
   @override
   Widget build(BuildContext context) {
     final List<ChallengeResultBase?> data = List.filled(10, null);
 
-    for (int i = 0; i < results.length; i++) {
-      data[i] = results[i];
+    for (int i = 0; i < game.results.length; i++) {
+      data[i] = game.results[i];
     }
 
     return DefaultTextStyle(
