@@ -37,7 +37,7 @@ class GameStateMapper extends ClassMapperBase<GameState> {
       Field('card', _$card, opt: true, def: const BingoCard());
   static Map<int, BowlingGame> _$history(GameState v) => v.history;
   static const Field<GameState, Map<int, BowlingGame>> _f$history =
-      Field('history', _$history, opt: true, def: const {});
+      Field('history', _$history, opt: true, def: const {1: BowlingGame()});
 
   @override
   final MappableFields<GameState> fields = const {

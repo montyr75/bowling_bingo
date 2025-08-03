@@ -199,7 +199,7 @@ class BingoCardDisplay extends StatelessWidget {
       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: card.extent),
       physics: const NeverScrollableScrollPhysics(),
       itemBuilder: (context, index) {
-        return BingoSpace(
+        return BingoSpaceDisplay(
           space: card[index],
           isSelected: currentSpace == index,
         );
@@ -208,12 +208,12 @@ class BingoCardDisplay extends StatelessWidget {
   }
 }
 
-class BingoSpace extends ConsumerWidget {
+class BingoSpaceDisplay extends ConsumerWidget {
   final Space space;
   final bool isSelected;
   final Widget? child;
 
-  const BingoSpace({
+  const BingoSpaceDisplay({
     super.key,
     required this.space,
     this.isSelected = false,
@@ -233,38 +233,43 @@ class BingoSpace extends ConsumerWidget {
           fit: BoxFit.fill,
         ),
       ),
-      child: Stack(
-        children: switch (space.state) {
-          SpaceState.unmarked => const [],
-          SpaceState.bonus => [
-            ColorFiltered(
-              colorFilter: const ColorFilter.mode(Colors.yellowAccent, BlendMode.srcATop),
-              child: LayoutBuilder(
-                builder: (context, constraints) {
-                  return Center(
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          return Stack(
+            children: switch (space.state) {
+              SpaceState.unmarked => const [],
+              SpaceState.bonus => [
+                ColorFiltered(
+                  colorFilter: const ColorFilter.mode(Colors.yellowAccent, BlendMode.srcATop),
+                  child: Center(
                     child: Image.asset(
                       'assets/images/question_mark.png',
                       width: constraints.maxWidth * 0.35,
                     ).animate().scale(),
-                  );
-                },
-              ),
-            ),
-          ],
-          SpaceState.marked => [
-            Image.asset(marker.assetPath).animate().scale(),
-            if (space.hasPointsMultiplier)
-              LayoutBuilder(
-                builder: (context, constraints) {
-                  return TopRight(
+                  ),
+                ),
+              ],
+              SpaceState.marked => [
+                Image.asset(marker.assetPath).animate().scale(),
+                Center(
+                  child: SizedBox(
+                    width: constraints.maxWidth * 0.1,
+                    child: FittedBox(
+                      fit: BoxFit.fill,
+                      child: Text(space.points.toString(), style: context.textStyles.bodyMedium).animate().scale(),
+                    ),
+                  ),
+                ),
+                if (space.hasPointsMultiplier)
+                  TopRight(
                     child: Image.asset(
                       'assets/images/x2.png',
                       width: constraints.maxWidth * 0.25,
                     ).animate().scale(delay: const Duration(milliseconds: 300)),
-                  );
-                },
-              ),
-          ],
+                  ),
+              ],
+            },
+          );
         },
       ),
     );

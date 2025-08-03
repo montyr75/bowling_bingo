@@ -72,14 +72,16 @@ class BingoCard with BingoCardMappable {
   BingoCard setSpacePointsMultiplier(int index, int multiplier) {
     final space = spaces[index].copyWith(pointsMultiplier: multiplier);
 
-    return copyWith(
+    final newCard = copyWith(
       spaces: List.unmodifiable(spaces.toList()..replaceAt(index, space)),
     );
+
+    return newCard.updatePoints();
   }
 
-  BingoCard markSpace(int index) => setSpaceState(index, SpaceState.marked);
+  BingoCard markSpace(int index) => setSpaceState(index, SpaceState.marked).updatePoints();
 
-  BingoCard markRandomSpace() => setSpaceState(getRandomUnmarkedSpace().index, SpaceState.marked);
+  BingoCard markRandomSpace() => setSpaceState(getRandomUnmarkedSpace().index, SpaceState.marked).updatePoints();
 
   List<Space> getUnmarkedSpaces() => spaces.where((space) => !space.isMarked).toList();
 
@@ -90,17 +92,21 @@ class BingoCard with BingoCardMappable {
 
   BingoCard setRandomBonusSpace() => setSpaceState(getRandomUnmarkedSpace().index, SpaceState.bonus);
 
+  BingoCard updatePoints() {
+    return copyWith(
+      spaces: List.unmodifiable(
+        spaces.map(
+          (space) => space.copyWith(
+            points: _calculateSpaceScore(index: space.index, extent: extent),
+          ),
+        ),
+      ),
+    );
+  }
+
   int get centerIndex => (extent * extent) ~/ 2;
 
-  int get score {
-    int total = 0;
-
-    for (final space in spaces) {
-      total += _calculateSpaceScore(index: space.index, extent: extent);
-    }
-
-    return total;
-  }
+  int get score => spaces.map((space) => space.points).sum();
 
   int _calculateSpaceScore({required int index, int extent = 5}) {
     final space = spaces[index];
@@ -138,11 +144,13 @@ class BingoCard with BingoCardMappable {
 class Space with SpaceMappable {
   final int index;
   final SpaceState state;
+  final int points;
   final int pointsMultiplier;
 
   const Space({
     required this.index,
     this.state = SpaceState.unmarked,
+    this.points = 0,
     this.pointsMultiplier = 1,
   });
 
@@ -160,6 +168,10 @@ enum SpaceState {
   unmarked,
   marked,
   bonus,
+}
+
+extension ListSpaceX on List<Space> {
+  int get totalPoints => map((space) => space.points).sum();
 }
 
 //  0  1  2  3  4
