@@ -32,6 +32,10 @@ extension NumberX on num {
   T maxOf<T extends num>(T maximum) => math.min(this as T, maximum);
 }
 
+extension DoubleX on double {
+  double roundToNearestFraction(int denominator) => (this * denominator).round() / denominator;
+}
+
 extension StringX on String {
   bool toBool() => this == "true" ? true : false;
   T toEnum<T extends Enum>(List<T> values) => values.firstWhere((value) => value.name == this);
