@@ -12,7 +12,8 @@ import '../../../utils/popup_utils.dart';
 import '../../../utils/screen_utils.dart';
 import '../../../widgets/game_page_wrapper.dart';
 import '../../../widgets/page_nav_button.dart';
-import '../../../widgets/score_sheet.dart';
+import '../../../widgets/responsive_score_sheet.dart';
+import '../../../models/bowling_game.dart';
 import '../../app/services/app/app_service.dart';
 import '../../bowling_challenge/presentation/challenge_display.dart';
 import '../services/game_service.dart';
@@ -35,10 +36,18 @@ class BingoPage extends StatelessWidget {
             return Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                state.currentGame != null ? ScoreSheet(game: state.currentGame!) : const ScoreSheet(),
+                // state.currentGame != null
+                //     ? ScoreSheet(
+                //         game: state.currentGame!,
+                //         sheetWidth: size.width * 0.9,
+                //       )
+                //     : ScoreSheet(sheetWidth: size.width * 0.9),
+                ResponsiveScoreSheet(
+                  game: state.currentGame ?? const BowlingGame(),
+                ),
                 boxL,
                 SizedBox(
-                  width: size.width * 0.9,
+                  width: size.width * 0.94,
                   child: BingoCardDisplay(
                     card: state.card,
                     currentSpace: state.challenge?.space,
@@ -236,6 +245,7 @@ class BingoSpaceDisplay extends ConsumerWidget {
       child: LayoutBuilder(
         builder: (context, constraints) {
           return Stack(
+            fit: StackFit.expand,
             children: switch (space.state) {
               SpaceState.unmarked => const [],
               SpaceState.bonus => [
@@ -252,19 +262,19 @@ class BingoSpaceDisplay extends ConsumerWidget {
               SpaceState.marked => [
                 Image.asset(marker.assetPath).animate().scale(),
                 Center(
-                  child: SizedBox(
-                    width: constraints.maxWidth * 0.1,
-                    child: FittedBox(
-                      fit: BoxFit.fill,
-                      child: Text(space.points.toString(), style: context.textStyles.bodyMedium).animate().scale(),
-                    ),
-                  ),
+                  child: Text(
+                    space.points.toString(),
+                    style: context.textStyles.displaySmall.copyWith(fontSize: constraints.maxWidth * 0.2),
+                  ).animate().scale(),
                 ),
                 if (space.hasPointsMultiplier)
                   TopRight(
-                    child: Image.asset(
-                      'assets/images/x2.png',
-                      width: constraints.maxWidth * 0.25,
+                    child: Text(
+                      'x${space.pointsMultiplier}',
+                      style: context.textStyles.displaySmall.copyWith(
+                        fontSize: constraints.maxWidth * 0.2,
+                        color: Colors.yellowAccent,
+                      ),
                     ).animate().scale(delay: const Duration(milliseconds: 300)),
                   ),
               ],

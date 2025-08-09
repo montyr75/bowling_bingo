@@ -116,6 +116,10 @@ class GameService extends _$GameService {
 
   void clearBingoCard() {
     state = state.init(extent: state.card.extent);
+
+    if (state.hasChallenge) {
+      state = state.clearChallenge();
+    }
   }
 
   void nextGame() {

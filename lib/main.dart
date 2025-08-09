@@ -23,7 +23,6 @@ class App extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    // make sure app service is created, which initializes the HTTP dispatcher
     ref.read(appServiceProvider);
 
     final themeState = ref.watch(themeServiceProvider);

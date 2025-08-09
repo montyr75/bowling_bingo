@@ -7,20 +7,19 @@ import '../models/frame.dart';
 import '../utils/screen_utils.dart';
 import '../utils/utils.dart';
 
-const sheetWidth = 360.0;
-const sheetHeight = sheetWidth * .1;
-const frameWidth = sheetHeight;
-const tenthFrameWidth = frameWidth + 10;
 const boxSizeFactor = .47;
 const tenthFrameBoxSizeFactor = .315;
 
 class ScoreSheet extends StatelessWidget {
   final BowlingGame game;
+  final double sheetWidth;
 
-  const ScoreSheet({super.key, this.game = const BowlingGame()});
+  const ScoreSheet({super.key, this.game = const BowlingGame(), this.sheetWidth = 360.0});
 
   @override
   Widget build(BuildContext context) {
+    final sheetHeight = sheetWidth * .1;    // also use this value as the width of a normal frame
+
     final List<ChallengeResultBase?> data = List.filled(10, null);
 
     for (int i = 0; i < game.results.length; i++) {
@@ -28,10 +27,10 @@ class ScoreSheet extends StatelessWidget {
     }
 
     return DefaultTextStyle(
-      style: context.textStyles.bodySmall,
+      style: context.textStyles.bodySmall.copyWith(fontSize: sheetWidth * .018),
       child: Container(
-        width: sheetWidth + 12,
-        height: sheetHeight + 20,
+        width: sheetWidth * 1.03,
+        height: sheetHeight * 1.32,
         decoration: BoxDecoration(
           color: Colors.black87,
           border: Border.all(color: Colors.grey),
@@ -43,17 +42,20 @@ class ScoreSheet extends StatelessWidget {
               frameData: data.first?.frameData,
               isSuccess: data.first?.isSuccess,
               showBorder: false,
+              frameWidth: sheetHeight,
             ),
             for (int i = 1; i < 9; i++)
               FrameBox(
                 frame: i + 1,
                 frameData: data[i]?.frameData,
                 isSuccess: data[i]?.isSuccess,
+                frameWidth: sheetHeight,
               ),
             FrameBox(
               frame: 10,
               frameData: data.last?.frameData,
               isSuccess: data.last?.isSuccess,
+              frameWidth: sheetHeight,
             ),
           ],
         ),
@@ -67,6 +69,7 @@ class FrameBox extends StatelessWidget {
   final Frame? frameData;
   final bool? isSuccess;
   final bool showBorder;
+  final double frameWidth;
 
   bool get isTenthFrame => frame == 10;
 
@@ -76,11 +79,12 @@ class FrameBox extends StatelessWidget {
     this.frameData,
     this.isSuccess,
     this.showBorder = true,
+    required this.frameWidth,
   });
 
   @override
   Widget build(BuildContext context) {
-    final width = !isTenthFrame ? frameWidth : tenthFrameWidth;
+    final width = !isTenthFrame ? frameWidth : frameWidth + 10;
     final tbSizeFactor = !isTenthFrame ? boxSizeFactor : tenthFrameBoxSizeFactor;
 
     String? firstThrow;
@@ -122,7 +126,7 @@ class FrameBox extends StatelessWidget {
           boxXS,
           Container(
             width: width,
-            height: sheetHeight,
+            height: frameWidth,
             decoration: BoxDecoration(
               border: Border(
                 top: const BorderSide(color: Colors.grey),

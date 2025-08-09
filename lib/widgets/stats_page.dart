@@ -8,7 +8,7 @@ import '../utils/popup_utils.dart';
 import '../utils/screen_utils.dart';
 import 'bg_bubble.dart';
 import 'page_nav_button.dart';
-import 'score_sheet.dart';
+import 'responsive_score_sheet.dart';
 import 'success_rate_bubble.dart';
 
 class StatsPage extends ConsumerWidget {
@@ -39,7 +39,7 @@ class StatsPage extends ConsumerWidget {
                         const SuccessRateBubble(),
                         for (final game in state.history.values) ...[
                           boxXXL,
-                          ScoreSheet(game: game),
+                          ResponsiveScoreSheet(game: game),
                         ],
                         boxM,
                         BgBubble(

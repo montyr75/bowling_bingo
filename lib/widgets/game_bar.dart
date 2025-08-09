@@ -77,7 +77,7 @@ AppBar buildGameBar() {
                   padding: const EdgeInsets.only(right: xl),
                   child: Text(
                     gameState.points.toString(),
-                    style: styles.displaySmall.copyWith(fontSize: 24),
+                    style: styles.displayLarge,
                   ),
                 ),
               ),
