@@ -7,8 +7,8 @@ import '../features/bingo/services/game_service.dart';
 import '../utils/popup_utils.dart';
 import '../utils/screen_utils.dart';
 import 'bg_bubble.dart';
+import 'bowling_score_sheet.dart';
 import 'page_nav_button.dart';
-import 'responsive_score_sheet.dart';
 import 'success_rate_bubble.dart';
 
 class StatsPage extends ConsumerWidget {
@@ -39,7 +39,10 @@ class StatsPage extends ConsumerWidget {
                         const SuccessRateBubble(),
                         for (final game in state.history.values) ...[
                           boxXXL,
-                          ResponsiveScoreSheet(game: game),
+                          SizedBox(
+                            width: MediaQuery.of(context).size.width * 0.94,
+                            child: BowlingScoreSheet(game: game),
+                          ),
                         ],
                         boxM,
                         BgBubble(
