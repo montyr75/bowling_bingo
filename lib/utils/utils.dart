@@ -8,6 +8,7 @@ const uuid = Uuid();
 
 final infinity = String.fromCharCode(0x221E);
 const endash = '–';
+const emdash = '——';
 
 extension NumberX on num {
   T bounded<T extends num>({T? min, T? max}) {
@@ -28,7 +29,6 @@ extension NumberX on num {
 
   /// These reverse the meaning of min/max. [min] means "restrict to minimum value", and vice versa.
   T minOf<T extends num>(T minimum) => math.max(this as T, minimum);
-
   T maxOf<T extends num>(T maximum) => math.min(this as T, maximum);
 }
 

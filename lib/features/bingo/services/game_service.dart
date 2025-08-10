@@ -1,8 +1,9 @@
 import 'package:dartx/dartx.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
-import '../../../data/bonus.dart';
 import '../../../data/bowling_challenges.dart';
+import '../../../data/mystery.dart';
+import '../../../models/bingo_card.dart';
 import '../../../models/bowling_game.dart';
 import '../../../models/challenge_result.dart';
 import '../../../models/frame.dart';
@@ -63,7 +64,7 @@ class GameService extends _$GameService {
     );
   }
 
-  ({bool isBingo, Bonus? bonus}) onChallengeComplete({required Frame frameData, required bool isSuccess}) {
+  ({bool isBingo, Mystery? mystery}) onChallengeComplete({required Frame frameData, required bool isSuccess}) {
     GameState newState = _updateHistory(
       state,
       ChallengeResult(
@@ -88,11 +89,18 @@ class GameService extends _$GameService {
       newState = _nextFrame(newState);
     }
 
+    final triggerMystery = space.isMystery && !state.card.isBingo && isSuccess;
+
+    if (triggerMystery) {
+      newState = newState.copyWith(card: newState.card.setRandomMysterySpace());
+    }
+
     state = newState.clearChallenge();
 
     return (
       isBingo: state.card.isBingo,
-      bonus: space.isBonus && isSuccess ? Bonus.getRandomBonus() : null,
+      mystery: triggerMystery ? Mystery.getRandomMystery() : null,
+      // mystery: true ? Mystery.getRandomMystery() : null,
     );
   }
 

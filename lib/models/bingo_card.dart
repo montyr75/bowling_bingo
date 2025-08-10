@@ -46,7 +46,7 @@ class BingoCard with BingoCardMappable {
       card = card.markSpace(card.centerIndex);
     }
 
-    return card.setRandomBonusSpace();
+    return card.setRandomMysterySpace();
   }
 
   bool get isBingo {
@@ -90,7 +90,7 @@ class BingoCard with BingoCardMappable {
     return unmarkedSpaces.first;
   }
 
-  BingoCard setRandomBonusSpace() => setSpaceState(getRandomUnmarkedSpace().index, SpaceState.bonus);
+  BingoCard setRandomMysterySpace() => setSpaceState(getRandomUnmarkedSpace().index, SpaceState.mystery);
 
   BingoCard updatePoints() {
     return copyWith(
@@ -158,16 +158,16 @@ class Space with SpaceMappable {
 
   bool get isUnmarked => state == SpaceState.unmarked;
 
-  bool get isBonus => state == SpaceState.bonus;
+  bool get isMystery => state == SpaceState.mystery;
 
-  bool get hasPointsMultiplier => pointsMultiplier > 1;
+  bool get hasPointsMultiplier => pointsMultiplier != 1;
 }
 
 @MappableEnum()
 enum SpaceState {
   unmarked,
   marked,
-  bonus,
+  mystery,
 }
 
 extension ListSpaceX on List<Space> {

@@ -5,11 +5,12 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
 
-import '../../../data/bonus.dart';
+import '../../../data/mystery.dart';
 import '../../../models/bingo_card.dart';
 import '../../../models/frame.dart';
 import '../../../utils/popup_utils.dart';
 import '../../../utils/screen_utils.dart';
+import '../../../utils/utils.dart';
 import '../../../widgets/bowling_score_sheet.dart';
 import '../../../widgets/game_page_wrapper.dart';
 import '../../../widgets/page_nav_button.dart';
@@ -101,17 +102,20 @@ class BingoPage extends StatelessWidget {
 
     if (result.isBingo) {
       await _showBingo();
-    } else if (result.bonus != null) {
-      await _showBonus(result.bonus!);
+    } else if (result.mystery != null) {
+      await _showMystery(result.mystery!);
 
       bool isBingo = false;
 
-      switch (result.bonus) {
-        case Bonus.freeSpace:
+      switch (result.mystery) {
+        case Mystery.freeSpace:
           isBingo = ref.read(gameServiceProvider.notifier).markRandomSpace();
           break;
-        case Bonus.pointsMultiplier2:
+        case Mystery.pointsMultiplier2:
           ref.read(gameServiceProvider.notifier).setPointsMultiplier(challenge.space, 2);
+          break;
+        case Mystery.pointsMultiplierNegative:
+          ref.read(gameServiceProvider.notifier).setPointsMultiplier(challenge.space, -1);
           break;
         case null:
           break;
@@ -150,9 +154,11 @@ class BingoPage extends StatelessWidget {
     );
   }
 
-  Future<void> _showBonus(Bonus bonus) {
+  Future<void> _showMystery(Mystery mystery) {
     return SmartDialog.show(
       builder: (context) {
+        final imagePath = mystery.isBonus ? 'assets/images/bonus.png' : 'assets/images/penalty.png';
+
         return GestureDetector(
           onTap: SmartDialog.dismiss,
           child: SizedBox(
@@ -162,17 +168,17 @@ class BingoPage extends StatelessWidget {
               children: [
                 ClipRRect(
                   borderRadius: BorderRadius.circular(lg),
-                  child: Image.asset('assets/images/bonus.png', width: dialogMaxWidth),
+                  child: Image.asset(imagePath, width: dialogMaxWidth),
                 ),
                 Align(
-                  alignment: const Alignment(0, 0.2),
+                  alignment: Alignment(0, mystery.isBonus ? 0.2 : 0.54),
                   child: Text(
-                    bonus.message,
+                    mystery.message,
                     style: context.textStyles.bodyLarge.copyWith(color: Colors.black),
                   ).animate().fadeIn(),
                 ),
                 Align(
-                  alignment: const Alignment(0, 0.65),
+                  alignment: Alignment(0, mystery.isBonus ? 0.65 : 0.77),
                   child: Text(
                     '(tap to dismiss)',
                     style: context.textStyles.titleMedium.copyWith(color: Colors.black),
@@ -242,7 +248,7 @@ class BingoSpaceDisplay extends ConsumerWidget {
             fit: StackFit.expand,
             children: switch (space.state) {
               SpaceState.unmarked => const [],
-              SpaceState.bonus => [
+              SpaceState.mystery => [
                 ColorFiltered(
                   colorFilter: const ColorFilter.mode(Colors.yellowAccent, BlendMode.srcATop),
                   child: Center(
@@ -264,10 +270,10 @@ class BingoSpaceDisplay extends ConsumerWidget {
                 if (space.hasPointsMultiplier)
                   TopRight(
                     child: Text(
-                      'x${space.pointsMultiplier}',
+                      space.pointsMultiplier > 1 ? 'x${space.pointsMultiplier}' : emdash,
                       style: context.textStyles.displaySmall.copyWith(
                         fontSize: constraints.maxWidth * 0.2,
-                        color: Colors.yellowAccent,
+                        color: space.pointsMultiplier > 1 ? Colors.yellowAccent : Colors.red,
                       ),
                     ).animate().scale(delay: const Duration(milliseconds: 300)),
                   ),

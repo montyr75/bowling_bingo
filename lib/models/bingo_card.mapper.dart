@@ -30,7 +30,7 @@ class SpaceStateMapper extends EnumMapper<SpaceState> {
       case r'marked':
         return SpaceState.marked;
       case r'bonus':
-        return SpaceState.bonus;
+        return SpaceState.mystery;
       default:
         throw MapperException.unknownEnumValue(value);
     }
@@ -43,7 +43,7 @@ class SpaceStateMapper extends EnumMapper<SpaceState> {
         return r'unmarked';
       case SpaceState.marked:
         return r'marked';
-      case SpaceState.bonus:
+      case SpaceState.mystery:
         return r'bonus';
     }
   }
