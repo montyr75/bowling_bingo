@@ -82,12 +82,19 @@ class BingoCard with BingoCardMappable {
   BingoCard markSpace(int index) => setSpaceState(index, SpaceState.marked).updatePoints();
 
   BingoCard markRandomSpace() => setSpaceState(getRandomUnmarkedSpace().index, SpaceState.marked).updatePoints();
+  BingoCard unmarkRandomSpace() => setSpaceState(getRandomMarkedSpace().index, SpaceState.unmarked).updatePoints();
 
   List<Space> getUnmarkedSpaces() => spaces.where((space) => !space.isMarked).toList();
+  List<Space> getMarkedSpaces() => spaces.where((space) => space.isMarked).toList();
 
   Space getRandomUnmarkedSpace() {
     final unmarkedSpaces = getUnmarkedSpaces()..shuffle();
     return unmarkedSpaces.first;
+  }
+
+  Space getRandomMarkedSpace() {
+    final markedSpaces = getMarkedSpaces()..shuffle();
+    return markedSpaces.first;
   }
 
   BingoCard setRandomMysterySpace() => setSpaceState(getRandomUnmarkedSpace().index, SpaceState.mystery);

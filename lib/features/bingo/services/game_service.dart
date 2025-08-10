@@ -3,7 +3,6 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../../../data/bowling_challenges.dart';
 import '../../../data/mystery.dart';
-import '../../../models/bingo_card.dart';
 import '../../../models/bowling_game.dart';
 import '../../../models/challenge_result.dart';
 import '../../../models/frame.dart';
@@ -91,10 +90,6 @@ class GameService extends _$GameService {
 
     final triggerMystery = space.isMystery && !state.card.isBingo && isSuccess;
 
-    if (triggerMystery) {
-      newState = newState.copyWith(card: newState.card.setRandomMysterySpace());
-    }
-
     state = newState.clearChallenge();
 
     return (
@@ -119,6 +114,12 @@ class GameService extends _$GameService {
 
     state = state.copyWith(
       card: card,
+    );
+  }
+
+  void setRandomMysterySpace() {
+    state = state.copyWith(
+      card: state.card.setRandomMysterySpace(),
     );
   }
 

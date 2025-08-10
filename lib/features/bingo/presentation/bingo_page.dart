@@ -123,6 +123,8 @@ class BingoPage extends StatelessWidget {
 
       if (isBingo && context.mounted) {
         await _showBingo();
+      } else {
+        ref.read(gameServiceProvider.notifier).setRandomMysterySpace();
       }
     }
   }

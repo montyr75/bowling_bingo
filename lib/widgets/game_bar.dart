@@ -47,28 +47,13 @@ AppBar buildGameBar() {
                 ),
               ),
               Center(
-                child: Column(
+                child: Row(
                   mainAxisSize: MainAxisSize.min,
+                  spacing: xxl,
                   children: [
-                    Text(
-                      appState.bowlerLevel.toString(),
-                      style: styles.bodySmall.copyWith(fontStyle: FontStyle.italic),
-                    ),
-                    boxS,
-                    Text(
-                      "Game: ${gameState.game}",
-                      style: styles.labelMedium,
-                    ),
-                    boxS,
-                    Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Text(
-                          "Success Rate: ${gameState.history.percentSuccess}%",
-                          style: styles.labelMedium,
-                        ),
-                      ],
-                    ),
+                    _StatItem(label: 'Level', value: appState.bowlerLevel.toString()),
+                    _StatItem(label: 'Game', value: gameState.game.toString()),
+                    _StatItem(label: 'Success', value: '${gameState.history.percentSuccess}%'),
                   ],
                 ),
               ),
@@ -87,4 +72,31 @@ AppBar buildGameBar() {
       ),
     ),
   );
+}
+
+class _StatItem extends StatelessWidget {
+  final String label;
+  final String value;
+
+  const _StatItem({required this.label, required this.value});
+
+  @override
+  Widget build(BuildContext context) {
+    final styles = context.textStyles;
+
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Text(
+          label.toUpperCase(),
+          style: styles.labelSmall,
+        ),
+        boxXS,
+        Text(
+          value,
+          style: styles.titleSmall,
+        ),
+      ],
+    );
+  }
 }
