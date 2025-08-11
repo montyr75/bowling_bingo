@@ -31,6 +31,8 @@ class MysteryMapper extends EnumMapper<Mystery> {
         return Mystery.pointsMultiplier2;
       case r'pointsMultiplierNegative':
         return Mystery.pointsMultiplierNegative;
+      case r'loseSpace':
+        return Mystery.loseSpace;
       default:
         throw MapperException.unknownEnumValue(value);
     }
@@ -45,6 +47,8 @@ class MysteryMapper extends EnumMapper<Mystery> {
         return r'pointsMultiplier2';
       case Mystery.pointsMultiplierNegative:
         return r'pointsMultiplierNegative';
+      case Mystery.loseSpace:
+        return r'loseSpace';
     }
   }
 }

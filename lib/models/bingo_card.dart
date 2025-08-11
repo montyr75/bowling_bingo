@@ -81,23 +81,48 @@ class BingoCard with BingoCardMappable {
 
   BingoCard markSpace(int index) => setSpaceState(index, SpaceState.marked).updatePoints();
 
-  BingoCard markRandomSpace() => setSpaceState(getRandomUnmarkedSpace().index, SpaceState.marked).updatePoints();
-  BingoCard unmarkRandomSpace() => setSpaceState(getRandomMarkedSpace().index, SpaceState.unmarked).updatePoints();
+  BingoCard markRandomSpace() {
+    final space = getRandomUnmarkedSpace();
+
+    if (space != null) {
+      return setSpaceState(space.index, SpaceState.marked).updatePoints();
+    }
+
+    return this;
+  }
+
+  BingoCard unmarkRandomSpace() {
+    final space = getRandomMarkedSpace();
+
+    if (space != null) {
+      return setSpaceState(space.index, SpaceState.unmarked).updatePoints();
+    }
+
+    return this;
+  }
 
   List<Space> getUnmarkedSpaces() => spaces.where((space) => !space.isMarked).toList();
   List<Space> getMarkedSpaces() => spaces.where((space) => space.isMarked).toList();
 
-  Space getRandomUnmarkedSpace() {
+  Space? getRandomUnmarkedSpace() {
     final unmarkedSpaces = getUnmarkedSpaces()..shuffle();
-    return unmarkedSpaces.first;
+    return unmarkedSpaces.isNotEmpty ? unmarkedSpaces.first : null;
   }
 
-  Space getRandomMarkedSpace() {
+  Space? getRandomMarkedSpace() {
     final markedSpaces = getMarkedSpaces()..shuffle();
-    return markedSpaces.first;
+    return markedSpaces.isNotEmpty ? markedSpaces.first : null;
   }
 
-  BingoCard setRandomMysterySpace() => setSpaceState(getRandomUnmarkedSpace().index, SpaceState.mystery);
+  BingoCard setRandomMysterySpace() {
+    final space = getRandomUnmarkedSpace();
+
+    if (space != null) {
+      return setSpaceState(space.index, SpaceState.mystery);
+    }
+
+    return this;
+  }
 
   BingoCard updatePoints() {
     return copyWith(

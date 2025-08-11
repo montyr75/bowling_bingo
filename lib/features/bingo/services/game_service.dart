@@ -63,7 +63,7 @@ class GameService extends _$GameService {
     );
   }
 
-  ({bool isBingo, Mystery? mystery}) onChallengeComplete({required Frame frameData, required bool isSuccess}) {
+  Mystery? onChallengeComplete({required Frame frameData, required bool isSuccess}) {
     GameState newState = _updateHistory(
       state,
       ChallengeResult(
@@ -88,25 +88,21 @@ class GameService extends _$GameService {
       newState = _nextFrame(newState);
     }
 
-    final triggerMystery = space.isMystery && !state.card.isBingo && isSuccess;
-
     state = newState.clearChallenge();
 
-    return (
-      isBingo: state.card.isBingo,
-      mystery: triggerMystery ? Mystery.getRandomMystery() : null,
-      // mystery: true ? Mystery.getRandomMystery() : null,
+    return space.isMystery && isSuccess ? Mystery.getRandomMystery(failureRate: 100 - state.history.percentSuccess) : null;
+  }
+
+  void markRandomSpace() {
+    state = state.copyWith(
+      card: state.card.markRandomSpace(),
     );
   }
 
-  bool markRandomSpace() {
-    final card = state.card.markRandomSpace();
-
+  void unmarkRandomSpace() {
     state = state.copyWith(
-      card: card,
+      card: state.card.unmarkRandomSpace(),
     );
-
-    return state.card.isBingo;
   }
 
   void setPointsMultiplier(int index, int multiplier) {

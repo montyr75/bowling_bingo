@@ -11,6 +11,7 @@ import '../../../models/frame.dart';
 import '../../../utils/popup_utils.dart';
 import '../../../utils/screen_utils.dart';
 import '../../../utils/utils.dart';
+import '../../../widgets/bg_bubble.dart';
 import '../../../widgets/bowling_score_sheet.dart';
 import '../../../widgets/game_page_wrapper.dart';
 import '../../../widgets/page_nav_button.dart';
@@ -96,36 +97,35 @@ class BingoPage extends StatelessWidget {
     required Frame frameData,
     required bool isSuccess,
   }) async {
-    final result = ref
-        .read(gameServiceProvider.notifier)
-        .onChallengeComplete(frameData: frameData, isSuccess: isSuccess);
+    final gameService = ref.read(gameServiceProvider.notifier);
 
-    if (result.isBingo) {
-      await _showBingo();
-    } else if (result.mystery != null) {
-      await _showMystery(result.mystery!);
+    final mystery = gameService.onChallengeComplete(frameData: frameData, isSuccess: isSuccess);
 
-      bool isBingo = false;
+    if (mystery != null) {
+      await _showMystery(mystery);
 
-      switch (result.mystery) {
+      switch (mystery) {
         case Mystery.freeSpace:
-          isBingo = ref.read(gameServiceProvider.notifier).markRandomSpace();
+          gameService.markRandomSpace();
           break;
         case Mystery.pointsMultiplier2:
-          ref.read(gameServiceProvider.notifier).setPointsMultiplier(challenge.space, 2);
+          gameService.setPointsMultiplier(challenge.space, 2);
           break;
         case Mystery.pointsMultiplierNegative:
-          ref.read(gameServiceProvider.notifier).setPointsMultiplier(challenge.space, -1);
+          gameService.setPointsMultiplier(challenge.space, -1);
           break;
-        case null:
+        case Mystery.loseSpace:
+          gameService.unmarkRandomSpace();
           break;
       }
 
-      if (isBingo && context.mounted) {
-        await _showBingo();
-      } else {
-        ref.read(gameServiceProvider.notifier).setRandomMysterySpace();
-      }
+      gameService.setRandomMysterySpace();
+    }
+
+    await Future.delayed(const Duration(seconds: 1));
+
+    if (ref.read(gameServiceProvider).card.isBingo) {
+      _showBingo();
     }
   }
 
@@ -248,9 +248,11 @@ class BingoSpaceDisplay extends ConsumerWidget {
         builder: (context, constraints) {
           return Stack(
             fit: StackFit.expand,
-            children: switch (space.state) {
-              SpaceState.unmarked => const [],
-              SpaceState.mystery => [
+            children: [
+              Image.asset(
+                marker.assetPath,
+              ).animate(target: space.state == SpaceState.marked ? 1 : 0).scale(duration: 200.ms),
+              if (space.state == SpaceState.mystery)
                 ColorFiltered(
                   colorFilter: const ColorFilter.mode(Colors.yellowAccent, BlendMode.srcATop),
                   child: Center(
@@ -259,28 +261,32 @@ class BingoSpaceDisplay extends ConsumerWidget {
                       width: constraints.maxWidth * 0.35,
                     ).animate().scale(),
                   ),
-                ),
-              ],
-              SpaceState.marked => [
-                Image.asset(marker.assetPath).animate().scale(),
+                )
+              else if (space.state == SpaceState.marked) ...[
                 Center(
-                  child: Text(
-                    space.points.toString(),
-                    style: context.textStyles.displaySmall.copyWith(fontSize: constraints.maxWidth * 0.16),
-                  ).animate().scale(),
-                ),
-                if (space.hasPointsMultiplier)
-                  TopRight(
-                    child: Text(
-                      space.pointsMultiplier > 1 ? 'x${space.pointsMultiplier}' : emdash,
-                      style: context.textStyles.displaySmall.copyWith(
-                        fontSize: constraints.maxWidth * 0.2,
-                        color: space.pointsMultiplier > 1 ? Colors.yellowAccent : Colors.red,
-                      ),
-                    ).animate().scale(delay: const Duration(milliseconds: 300)),
+                  child: DecoratedBox(
+                    decoration: const BoxDecoration(
+                      color: Colors.black26,
+                      shape: BoxShape.circle,
+                    ),
+                    child: Padding(
+                      padding: paddingAllM,
+                      child: Text(
+                        space.points.toString(),
+                        style: context.textStyles.displaySmall.copyWith(
+                          fontSize: constraints.maxWidth * 0.16,
+                          color: !space.hasPointsMultiplier
+                              ? Colors.white
+                              : space.pointsMultiplier > 1
+                              ? Colors.yellowAccent
+                              : Colors.red,
+                        ),
+                      ).animate().scale(),
+                    ),
                   ),
+                ),
               ],
-            },
+            ],
           );
         },
       ),
