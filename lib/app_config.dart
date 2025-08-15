@@ -4,7 +4,7 @@ import 'features/app/services/logger_service.dart';
 
 // app info
 const appName = "bowling_bingo";
-const version = "0.0.12";
+const version = "0.0.13";
 const debugMode = !kReleaseMode;
 
 // create logger

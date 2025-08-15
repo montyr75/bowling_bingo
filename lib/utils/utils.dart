@@ -81,18 +81,18 @@ extension IterableWidgetX on Iterable<Widget> {
   }
 }
 
-extension ListX on List {
-  void replaceAt(int index, Object replacement) {
+extension ListX<T> on List<T> {
+  void replaceAt(int index, T replacement) {
     this[index] = replacement;
   }
 
-  void replaceWith(Object original, Object replacement) {
+  void replaceWith(T original, T replacement) {
     if (contains(original)) {
       replaceAt(indexOf(original), replacement);
     }
   }
 
-  void replaceWithOrAdd(Object original, Object replacement) {
+  void replaceWithOrAdd(T original, T replacement) {
     if (contains(original)) {
       replaceWith(original, replacement);
     } else {
@@ -100,19 +100,23 @@ extension ListX on List {
     }
   }
 
-  void removeAll(Iterable values) {
+  void removeAll(Iterable<T> values) {
     for (final value in values) {
       remove(value);
     }
   }
+
+  T randomElement() {
+    if (isEmpty) throw StateError('Cannot get a random element from an empty list.');
+    return this[math.Random().nextInt(length)];
+  }
 }
 
-extension SetX on Set {
-  void toggleValue(Object value) {
-    if (!contains(value)) {
-      add(value);
-    }
-    else {
+extension SetX<T> on Set<T> {
+  /// Adds the [value] if it's not in the set, or removes it if it is.
+  void toggleValue(T value) {
+    // `Set.add` returns `false` if the item was already in the set.
+    if (!add(value)) {
       remove(value);
     }
   }

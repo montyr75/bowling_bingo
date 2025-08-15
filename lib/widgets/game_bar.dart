@@ -10,6 +10,8 @@ import '../features/bingo/services/game_service.dart';
 import '../features/bingo/services/game_state.dart';
 import '../utils/screen_utils.dart';
 
+const _kSmallScreenBreakpoint = 380.0;
+
 AppBar buildGameBar() {
   return AppBar(
     toolbarHeight: 68,
@@ -20,6 +22,8 @@ AppBar buildGameBar() {
         builder: (context, ref, child) {
           final appState = ref.read(appServiceProvider);
           final gameState = ref.watch(gameServiceProvider);
+
+          final screenWidth = MediaQuery.of(context).size.width;
 
           final styles = context.textStyles;
 
@@ -49,7 +53,7 @@ AppBar buildGameBar() {
               Center(
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
-                  spacing: xxl,
+                  spacing: screenWidth < _kSmallScreenBreakpoint ? lg : xxl,
                   children: [
                     _StatItem(label: 'Level', value: appState.bowlerLevel.toString()),
                     _StatItem(label: 'Game', value: gameState.game.toString()),

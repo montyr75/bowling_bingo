@@ -1,5 +1,4 @@
 import 'package:awesome_flutter_extensions/awesome_flutter_extensions.dart' hide Space;
-import 'package:extra_alignments/extra_alignments.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -10,8 +9,6 @@ import '../../../models/bingo_card.dart';
 import '../../../models/frame.dart';
 import '../../../utils/popup_utils.dart';
 import '../../../utils/screen_utils.dart';
-import '../../../utils/utils.dart';
-import '../../../widgets/bg_bubble.dart';
 import '../../../widgets/bowling_score_sheet.dart';
 import '../../../widgets/game_page_wrapper.dart';
 import '../../../widgets/page_nav_button.dart';

@@ -5,8 +5,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../data/bowling_challenges.dart';
 import '../../../models/frame.dart';
-import '../../../utils/popup_utils.dart';
 import '../../../utils/screen_utils.dart';
+import '../../../widgets/challenge_confirmation_dialog.dart';
 import '../../../widgets/frame_editor.dart';
 import '../../../widgets/page_nav_button.dart';
 import '../controllers/challenge_ctrl.dart';
@@ -247,13 +247,9 @@ class ChallengeDisplay extends ConsumerWidget {
                     label: 'Failure',
                     color: ButtonColor.red,
                     onPressed: () {
-                      showConfirmDialog(
-                        context: context,
-                        title: "Failure!",
-                        message: "You have failed! Better luck next time.",
+                      ChallengeConfirmationDialog.show(
+                        isSuccess: false,
                         yesMsg: "Confirm Failure",
-                        noMsg: "Cancel",
-                        barrierDismissable: false,
                         onConfirm: () => onFailure(state.frame),
                       );
                     },
@@ -263,14 +259,9 @@ class ChallengeDisplay extends ConsumerWidget {
                     label: 'Success',
                     color: ButtonColor.green,
                     onPressed: () {
-                      showConfirmDialog(
-                        autoDismiss: true,
-                        context: context,
-                        title: "Success!",
-                        message: "You've bested the challenge!",
+                      ChallengeConfirmationDialog.show(
+                        isSuccess: true,
                         yesMsg: "Confirm Success",
-                        noMsg: "Cancel",
-                        barrierDismissable: false,
                         onConfirm: () => onSuccess(state.frame),
                       );
                     },
