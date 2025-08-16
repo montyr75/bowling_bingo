@@ -1,6 +1,5 @@
 import 'dart:math' as math;
 
-import 'package:awesome_flutter_extensions/awesome_flutter_extensions.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
 
@@ -78,20 +77,14 @@ class _ChallengeConfirmationDialogState extends State<ChallengeConfirmationDialo
   }
 
   @override
-  void dispose() {
-    _animationController.dispose();
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
     final isSuccess = widget.isSuccess;
-    final styles = context.textStyles;
+    final textTheme = context.textTheme;
     final borderColor = isSuccess ? Colors.green.shade300 : Colors.red.shade400;
     final backgroundColor = isSuccess ? const Color(0xFF2E4053) : const Color(0xFF212121);
     final titleStyle = isSuccess
-        ? styles.titleLarge.copyWith(color: Colors.yellowAccent.shade100)
-        : styles.titleLarge.copyWith(color: Colors.red.shade200);
+        ? textTheme.titleLarge!.copyWith(color: Colors.yellowAccent.shade100)
+        : textTheme.titleLarge!.copyWith(color: Colors.red.shade200);
 
     final dialogContent = Column(
       mainAxisSize: MainAxisSize.min,
@@ -103,7 +96,7 @@ class _ChallengeConfirmationDialogState extends State<ChallengeConfirmationDialo
         ),
         boxXXL,
         DefaultTextStyle(
-          style: styles.bodyLarge,
+          style: textTheme.bodyLarge!,
           child: widget.content,
         ),
         boxXXL,
@@ -133,6 +126,12 @@ class _ChallengeConfirmationDialogState extends State<ChallengeConfirmationDialo
         child: dialogContent,
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    _animationController.dispose();
+    super.dispose();
   }
 }
 

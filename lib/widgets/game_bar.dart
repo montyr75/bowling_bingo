@@ -1,4 +1,3 @@
-import 'package:awesome_flutter_extensions/awesome_flutter_extensions.dart';
 import 'package:backdrop/backdrop.dart';
 import 'package:extra_alignments/extra_alignments.dart';
 import 'package:flutter/material.dart';
@@ -9,6 +8,7 @@ import '../features/app/services/app/app_service.dart';
 import '../features/bingo/services/game_service.dart';
 import '../features/bingo/services/game_state.dart';
 import '../utils/screen_utils.dart';
+import '../utils/utils.dart';
 
 const _kSmallScreenBreakpoint = 380.0;
 
@@ -25,7 +25,7 @@ AppBar buildGameBar() {
 
           final screenWidth = MediaQuery.of(context).size.width;
 
-          final styles = context.textStyles;
+          final textTheme = context.textTheme;
 
           return Stack(
             children: [
@@ -66,7 +66,7 @@ AppBar buildGameBar() {
                   padding: const EdgeInsets.only(right: xl),
                   child: Text(
                     gameState.points.toString(),
-                    style: styles.displayLarge,
+                    style: textTheme.displayLarge,
                   ),
                 ),
               ),
@@ -86,19 +86,19 @@ class _StatItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final styles = context.textStyles;
+    final textTheme = context.textTheme;
 
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
         Text(
           label.toUpperCase(),
-          style: styles.labelSmall,
+          style: textTheme.labelSmall,
         ),
         boxXS,
         Text(
           value,
-          style: styles.titleSmall,
+          style: textTheme.titleSmall,
         ),
       ],
     );

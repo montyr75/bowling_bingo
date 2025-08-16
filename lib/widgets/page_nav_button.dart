@@ -1,5 +1,6 @@
-import 'package:awesome_flutter_extensions/awesome_flutter_extensions.dart';
 import 'package:flutter/material.dart';
+
+import '../utils/utils.dart';
 
 class PageNavButton extends StatelessWidget {
   final String label;
@@ -17,7 +18,7 @@ class PageNavButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final styles = context.textStyles;
+    final textTheme = context.textTheme;
 
     return ClipRRect(
       borderRadius: BorderRadius.circular(12),
@@ -37,7 +38,7 @@ class PageNavButton extends StatelessWidget {
                   offset: const Offset(0, -2),
                   child: Text(
                     label,
-                    style: styles.titleLarge.copyWith(fontWeight: FontWeight.bold),
+                    style: textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
                   ),
                 ),
               ),

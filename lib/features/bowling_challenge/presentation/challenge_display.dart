@@ -1,4 +1,3 @@
-import 'package:awesome_flutter_extensions/awesome_flutter_extensions.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -6,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../data/bowling_challenges.dart';
 import '../../../models/frame.dart';
 import '../../../utils/screen_utils.dart';
+import '../../../utils/utils.dart';
 import '../../../widgets/challenge_confirmation_dialog.dart';
 import '../../../widgets/frame_editor.dart';
 import '../../../widgets/page_nav_button.dart';
@@ -51,7 +51,7 @@ class ChallengeDisplay extends ConsumerWidget {
       ).notifier,
     );
 
-    final styles = context.textStyles;
+    final textTheme = context.textTheme;
 
     String? thirdThrow;
 
@@ -195,7 +195,7 @@ class ChallengeDisplay extends ConsumerWidget {
                         padding: paddingAllM,
                         child: Text(
                           challenge.toDisplay(strength),
-                          style: styles.bodyMedium.copyWith(height: 1.2),
+                          style: textTheme.bodyMedium?.copyWith(height: 1.2),
                         ),
                       ),
                     ),

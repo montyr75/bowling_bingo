@@ -1,8 +1,8 @@
-import 'package:awesome_flutter_extensions/awesome_flutter_extensions.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../routes.dart';
+import '../../../utils/utils.dart';
 
 class NotFoundPage extends StatelessWidget {
   const NotFoundPage({super.key});
@@ -18,7 +18,7 @@ class NotFoundPage extends StatelessWidget {
           children: [
             Text(
               "404 -- Page Not Found",
-              style: context.textStyles.headlineMedium,
+              style: context.textTheme.headlineMedium,
               textAlign: TextAlign.center,
             ),
             TextButton(

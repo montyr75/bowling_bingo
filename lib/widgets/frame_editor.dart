@@ -1,4 +1,3 @@
-import 'package:awesome_flutter_extensions/awesome_flutter_extensions.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:go_router/go_router.dart';
@@ -45,7 +44,7 @@ class FrameEditor extends StatelessWidget {
     String? thirdThrow;
     TenthFrame? tenthFrame;
 
-    final numberStyle = context.textStyles.bodyLarge;
+    final numberStyle = context.textTheme.bodyLarge;
 
     if (isTenthFrame) {
       tenthFrame = frame as TenthFrame;
@@ -161,7 +160,7 @@ class FrameEditor extends StatelessWidget {
                   },
                   icon: Text(
                     option,
-                    style: context.textStyles.bodyLarge,
+                    style: context.textTheme.bodyLarge,
                   ),
                 ),
             ],

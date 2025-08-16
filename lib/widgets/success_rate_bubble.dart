@@ -1,4 +1,3 @@
-import 'package:awesome_flutter_extensions/awesome_flutter_extensions.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -6,6 +5,7 @@ import '../features/app/services/app/app_service.dart';
 import '../features/bingo/services/game_service.dart';
 import '../features/bingo/services/game_state.dart';
 import '../utils/screen_utils.dart';
+import '../utils/utils.dart';
 import 'bg_bubble.dart';
 
 class SuccessRateBubble extends ConsumerWidget {
@@ -16,7 +16,7 @@ class SuccessRateBubble extends ConsumerWidget {
     final appState = ref.read(appServiceProvider);
     final gameState = ref.read(gameServiceProvider);
 
-    final styles = context.textStyles;
+    final textTheme = context.textTheme;
 
     return BgBubble(
       child: Column(
@@ -27,19 +27,19 @@ class SuccessRateBubble extends ConsumerWidget {
             children: [
               Text(
                 "Success Rate:",
-                style: styles.headlineSmall,
+                style: textTheme.headlineSmall,
               ),
               boxM,
               Text(
                 "${gameState.history.percentSuccess}%",
-                style: styles.headlineSmall,
+                style: textTheme.headlineSmall,
               ),
             ],
           ),
           boxS,
           Text(
             appState.bowlerLevel.toString(),
-            style: styles.bodySmall.copyWith(fontStyle: FontStyle.italic),
+            style: textTheme.bodySmall?.copyWith(fontStyle: FontStyle.italic),
           ),
         ],
       ),

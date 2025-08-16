@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:awesome_flutter_extensions/awesome_flutter_extensions.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
 
@@ -19,14 +18,14 @@ Future<void> showConfirmDialog({
   bool autoDismiss = true,
   bool barrierDismissable = true,
 }) {
-  final styles = context.textStyles;
+  final textTheme = context.textTheme;
 
   return SmartDialog.show(
     clickMaskDismiss: barrierDismissable,
     builder: (_) {
       return FantasyDialog(
-        title: Text(title ?? "Are you sure?", style: styles.titleLarge),
-        content: Text(message, style: styles.bodyLarge),
+        title: Text(title ?? "Are you sure?", style: textTheme.titleLarge),
+        content: Text(message, style: textTheme.bodyLarge),
         actions: [
           TextButton(
             onPressed: SmartDialog.dismiss,
@@ -54,13 +53,13 @@ Future<void> showInfoDialog({
   required String message,
   String? closeMsg,
 }) {
-  final styles = context.textStyles;
+  final textTheme = context.textTheme;
 
   return SmartDialog.show(
     builder: (_) {
       return FantasyDialog(
-        title: Text(title ?? "Info", style: styles.titleLarge),
-        content: Text(message, style: styles.bodyLarge),
+        title: Text(title ?? "Info", style: textTheme.titleLarge),
+        content: Text(message, style: textTheme.bodyLarge),
         actions: [
           TextButton(
             onPressed: SmartDialog.dismiss,

@@ -138,3 +138,7 @@ extension TextEditingControllerExt on TextEditingController {
     selection = TextSelection(baseOffset: 0, extentOffset: text.length);
   }
 }
+
+extension BuildContextX on BuildContext {
+  TextTheme get textTheme => Theme.of(this).textTheme;
+}

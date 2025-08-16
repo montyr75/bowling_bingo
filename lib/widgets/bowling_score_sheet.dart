@@ -1,9 +1,9 @@
-import 'package:awesome_flutter_extensions/awesome_flutter_extensions.dart';
 import 'package:flutter/material.dart';
 
 import '../models/bowling_game.dart';
 import '../models/challenge_result.dart';
 import '../models/frame.dart';
+import '../utils/utils.dart';
 import 'frame_editor.dart';
 
 class BowlingScoreSheet extends StatelessWidget {
@@ -13,7 +13,7 @@ class BowlingScoreSheet extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final styles = context.textStyles;
+    final textTheme = context.textTheme;
 
     final List<ChallengeResultBase?> data = List.filled(10, null);
 
@@ -24,7 +24,7 @@ class BowlingScoreSheet extends StatelessWidget {
     }
 
     return DefaultTextStyle(
-      style: styles.bodyMedium,
+      style: textTheme.bodyMedium!,
       child: Container(
         decoration: BoxDecoration(
           color: Colors.black87,
